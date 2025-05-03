@@ -9,6 +9,7 @@ import {
   Request,
   HttpCode,
   HttpStatus,
+  Put,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -34,7 +35,7 @@ import { ApiSuccessResponse } from '../common/decorators/api-response.decorator'
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  @Post('list')
+  @Get('list')
   @UseGuards(RolesGuard)
   @Roles(0) // 只有管理员可以访问
   @ApiBearerAuth()
@@ -66,7 +67,7 @@ export class UsersController {
     return this.usersService.findById(req.user.uid);
   }
 
-  @Post('info/modify')
+  @Put('info/modify')
   @UseGuards(RolesGuard)
   @Roles(0) // 只有管理员可以访问
   @ApiBearerAuth()
@@ -79,7 +80,7 @@ export class UsersController {
     return this.usersService.update(uid, updateUserDto);
   }
 
-  @Post('modify/name')
+  @Put('modify/name')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: '修改个人姓名' })
@@ -89,7 +90,7 @@ export class UsersController {
     return { success: true };
   }
 
-  @Post('modify/phone')
+  @Put('modify/phone')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: '修改个人手机号' })
@@ -99,7 +100,7 @@ export class UsersController {
     return { success: true };
   }
 
-  @Post('modify/birthdate')
+  @Put('modify/birthdate')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: '修改个人出生日期' })
@@ -109,7 +110,7 @@ export class UsersController {
     return { success: true };
   }
 
-  @Post('modify/sex')
+  @Put('modify/sex')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: '修改个人性别' })

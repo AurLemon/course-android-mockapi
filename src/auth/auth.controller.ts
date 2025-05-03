@@ -6,6 +6,7 @@ import {
   UseGuards,
   Get,
   Req,
+  Put,
   BadRequestException,
 } from '@nestjs/common';
 import {
@@ -73,7 +74,7 @@ export class AuthController {
   }
 
   // 修改密码
-  @Post('modify/password')
+  @Put('modify/password')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: '修改密码' })
