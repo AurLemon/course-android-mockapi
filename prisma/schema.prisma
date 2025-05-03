@@ -1,9 +1,4 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
+// prisma/schema.prisma
 generator client {
   provider = "prisma-client-js"
 }
@@ -15,16 +10,16 @@ datasource db {
 
 model User {
   uid       Int      @id @default(autoincrement())
-  username  String   @db.VarChar(30) @unique
-  password  String   @db.VarChar(255)
-  trueName  String?  @db.VarChar(10)
-  sex       String?  @db.VarChar(2)
-  telephone String?  @db.VarChar(13)
-  birth     String?
-  dept      String?
-  balance   Float    @default(0)
-  regtime   DateTime @default(now())
-  role      Int      @default(1) // 0: 管理员, 1: 普通用户
+  username  String   @db.VarChar(30) @unique // 学号，唯一标识
+  password  String   @db.VarChar(255) // 密码存储需要加密，所以长度要大一些
+  trueName  String?  @db.VarChar(10) // 真实姓名
+  sex       String?  @db.VarChar(2) // 性别
+  telephone String?  @db.VarChar(13) // 手机或座机号码
+  birth     String?  // 出生日期
+  dept      String?  // 专业班级
+  balance   Float    @default(0) // 余额
+  regtime   DateTime @default(now()) // 注册时间，使用DateTime类型
+  role      Int      @default(1) // 0:管理员，1:普通用户
 
   // 关联通知（用于记录谁创建了通知）
   notices   Notice[]
@@ -32,27 +27,36 @@ model User {
   @@map("tbl_user")
 }
 
+model AlbumType {
+  id     Int     @id @default(autoincrement())
+  name   String  @db.VarChar(50)
+  albums Album[] // 关联到相册
+
+  @@map("tbl_album_type")
+}
+
 model Album {
   id          BigInt    @id @default(autoincrement())
-  title       String    @db.VarChar(200)
-  coverPath   String    @map("cover_path") @db.VarChar(1000)
-  describe    String    @db.VarChar(200)
-  type        Int
-  loopPicPath String    @map("loop_pic_path") @db.VarChar(1000)
-  createTime  DateTime? @map("create_time") @default(now())
-  updateTime  DateTime? @map("update_time") @updatedAt
+  title       String    @db.VarChar(200) // 景区名称
+  coverPath   String    @map("cover_path") @db.VarChar(1000) // 封面图片路径
+  describe    String    @db.VarChar(200) // 简介
+  type        Int       // 分类ID
+  albumType   AlbumType? @relation(fields: [type], references: [id]) // 关联类型表
+  loopPicPath String    @map("loop_pic_path") @db.VarChar(1000) // 存储轮播图路径，以逗号分隔
+  createTime  DateTime? @map("create_time") @default(now()) // 创建时间
+  updateTime  DateTime? @map("update_time") @updatedAt // 更新时间
 
   @@map("ss_album")
 }
 
 model Notice {
   id        Int       @id @default(autoincrement())
-  title     String    @db.VarChar(100)
-  content   String    @db.Text
-  createdAt DateTime  @default(now()) @map("created_at")
-  updatedAt DateTime? @updatedAt @map("updated_at")
-  authorId  Int       @map("author_id")
-  author    User      @relation(fields: [authorId], references: [uid])
+  title     String    @db.VarChar(100) // 通知标题
+  content   String    @db.Text // 通知内容
+  createdAt DateTime  @default(now()) @map("created_at") // 创建时间
+  updatedAt DateTime? @updatedAt @map("updated_at") // 更新时间
+  authorId  Int       @map("author_id") // 作者ID
+  author    User      @relation(fields: [authorId], references: [uid]) // 关联到用户
 
   @@map("tbl_notice")
 }
