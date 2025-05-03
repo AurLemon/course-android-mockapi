@@ -20,8 +20,6 @@ export class HttpExceptionFilter implements ExceptionFilter {
         errorMessage.includes('JSON') ||
         errorMessage.includes('double-quoted property name')
       ) {
-        console.log('检测到JSON错误，返回中文提示');
-
         let message = '请求体 JSON 格式错误';
 
         if (errorMessage.includes('double-quoted property name')) {
