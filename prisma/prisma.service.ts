@@ -18,22 +18,8 @@ export class PrismaService
     const isDevelopment = configService?.get('NODE_ENV') !== 'production';
 
     super({
-      log: isDevelopment
-        ? [
-            { emit: 'event', level: 'query' },
-            { emit: 'stdout', level: 'info' },
-            { emit: 'stdout', level: 'warn' },
-            { emit: 'stdout', level: 'error' },
-          ]
-        : [{ emit: 'stdout', level: 'error' }],
+      log: isDevelopment ? ['info', 'warn', 'error'] : ['error'],
     });
-
-    if (isDevelopment) {
-      this.$on('query', (e) => {
-        this.logger.debug(`Query: ${e.query}`);
-        this.logger.debug(`Duration: ${e.duration}ms`);
-      });
-    }
   }
 
   /**
@@ -94,22 +80,13 @@ export class PrismaService
 
     this.logger.warn('Cleaning database - ALL DATA WILL BE DELETED');
 
-    const models = Reflect.ownKeys(this).filter((key) => {
-      return (
-        typeof key === 'string' &&
-        !key.startsWith('_') &&
-        !key.startsWith('$') &&
-        typeof this[key as string] === 'object' &&
-        this[key as string] !== null &&
-        'deleteMany' in this[key as string]
-      );
-    });
-
     return this.$transaction([
-      this.notice.deleteMany(),
-      this.album.deleteMany(),
-      this.albumType.deleteMany(),
-      this.user.deleteMany(),
+      this.notice?.deleteMany ? this.notice.deleteMany() : Promise.resolve(),
+      this.album?.deleteMany ? this.album.deleteMany() : Promise.resolve(),
+      (this as any).albumType?.deleteMany
+        ? (this as any).albumType.deleteMany()
+        : Promise.resolve(),
+      this.user?.deleteMany ? this.user.deleteMany() : Promise.resolve(),
     ]);
   }
 }
