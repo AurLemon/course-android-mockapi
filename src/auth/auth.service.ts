@@ -38,7 +38,7 @@ export class AuthService {
     return result;
   }
 
-  // 更新 login 方法
+  // login 方法
   async login(user: any) {
     try {
       /**
@@ -405,7 +405,6 @@ export class AuthService {
     oldPassword: string,
     newPassword: string,
   ) {
-    // 查找用户
     const user = await this.prisma.user.findUnique({
       where: { uid: userId },
     });
@@ -414,12 +413,10 @@ export class AuthService {
       throw new BadRequestException('用户不存在');
     }
 
-    // 验证旧密码
     if (user.password !== oldPassword) {
       throw new BadRequestException('原密码不正确');
     }
 
-    // 更新密码
     await this.prisma.user.update({
       where: { uid: userId },
       data: { password: newPassword },
