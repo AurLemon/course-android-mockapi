@@ -6,10 +6,53 @@
 
 generator client {
   provider = "prisma-client-js"
-  output   = "../generated/prisma"
 }
 
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+}
+
+model User {
+  uid       Int      @id @default(autoincrement())
+  username  String   @db.VarChar(30) @unique
+  password  String   @db.VarChar(255)
+  trueName  String?  @db.VarChar(10)
+  sex       String?  @db.VarChar(2)
+  telephone String?  @db.VarChar(13)
+  birth     String?
+  dept      String?
+  balance   Float    @default(0)
+  regtime   DateTime @default(now())
+  role      Int      @default(1) // 0: 管理员, 1: 普通用户
+
+  // 关联通知（用于记录谁创建了通知）
+  notices   Notice[]
+
+  @@map("tbl_user")
+}
+
+model Album {
+  id          BigInt    @id @default(autoincrement())
+  title       String    @db.VarChar(200)
+  coverPath   String    @map("cover_path") @db.VarChar(1000)
+  describe    String    @db.VarChar(200)
+  type        Int
+  loopPicPath String    @map("loop_pic_path") @db.VarChar(1000)
+  createTime  DateTime? @map("create_time") @default(now())
+  updateTime  DateTime? @map("update_time") @updatedAt
+
+  @@map("ss_album")
+}
+
+model Notice {
+  id        Int       @id @default(autoincrement())
+  title     String    @db.VarChar(100)
+  content   String    @db.Text
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime? @updatedAt @map("updated_at")
+  authorId  Int       @map("author_id")
+  author    User      @relation(fields: [authorId], references: [uid])
+
+  @@map("tbl_notice")
 }
