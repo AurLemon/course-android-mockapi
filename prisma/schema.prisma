@@ -1,4 +1,3 @@
-// prisma/schema.prisma
 generator client {
   provider = "prisma-client-js"
 }
@@ -8,6 +7,27 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+/**
+ * 数据库表结构
+ */
+model Token {
+  id                Int      @id @default(autoincrement())
+  userId            Int      @map("user_id")
+  token             String   @unique
+  refreshToken      String   @unique @map("refresh_token")
+  tokenExpires      DateTime @map("token_expires")
+  refreshTokenExpires DateTime @map("refresh_token_expires")
+  lastUsed          DateTime @map("last_used") @default(now())
+  createdAt         DateTime @map("created_at") @default(now())
+  
+  user              User     @relation(fields: [userId], references: [uid])
+
+  @@map("tbl_token")
+}
+
+/**
+ * 用户表结构
+ */
 model User {
   uid       Int      @id @default(autoincrement())
   username  String   @db.VarChar(30) @unique // 学号，唯一标识
@@ -20,21 +40,28 @@ model User {
   balance   Float    @default(0) // 余额
   regtime   DateTime @default(now()) // 注册时间，使用DateTime类型
   role      Int      @default(1) // 0:管理员，1:普通用户
-
-  // 关联通知（用于记录谁创建了通知）
+  
   notices   Notice[]
+  tokens   Token[]
 
   @@map("tbl_user")
 }
 
+/**
+ * 相册类型表
+ */
 model AlbumType {
   id     Int     @id @default(autoincrement())
   name   String  @db.VarChar(50)
-  albums Album[] // 关联到相册
+
+  albums Album[]
 
   @@map("tbl_album_type")
 }
 
+/**
+ * 相册表
+ */
 model Album {
   id          BigInt    @id @default(autoincrement())
   title       String    @db.VarChar(200) // 景区名称
@@ -49,6 +76,9 @@ model Album {
   @@map("ss_album")
 }
 
+/**
+ * 通知表
+ */
 model Notice {
   id        Int       @id @default(autoincrement())
   title     String    @db.VarChar(100) // 通知标题
