@@ -23,9 +23,7 @@ import {
 } from './dto/auth.dto';
 import { ApiSuccessResponse } from '../common/decorators/api-response.decorator';
 import { AuthService } from './auth.service';
-import { JwtAuthGuard } from './guards/jwt-auth.guard';
-import { Roles } from '../common/decorators/roles.decorator';
-import { RolesGuard } from './guards/roles.guard';
+import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
 
 @ApiTags('认证服务')
 @Controller('auth')
