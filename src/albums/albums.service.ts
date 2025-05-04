@@ -5,6 +5,7 @@ import {
 } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { CreateAlbumDto, UpdateAlbumDto } from './dto/album.dto';
+import { log } from 'node:console';
 
 @Injectable()
 export class AlbumsService {
@@ -12,25 +13,56 @@ export class AlbumsService {
 
   // 获取所有相册
   async findAll() {
-    const albums = await this.prisma.album.findMany({
-      include: {
-        albumType: {
-          select: {
-            name: true,
+    try {
+      const typeCount = await this.prisma.albumType.count();
+
+      if (typeCount === 0) {
+        console.log('未找到相册类型数据，正在创建默认类型...');
+        await this.prisma.albumType.createMany({
+          data: [
+            { id: 1, name: '自然风景' },
+            { id: 2, name: '国外景点' },
+            { id: 3, name: '历史文化' },
+            { id: 4, name: '四季风光' },
+          ],
+          skipDuplicates: true,
+        });
+      }
+
+      const albums = await this.prisma.album.findMany({
+        include: {
+          albumType: {
+            select: {
+              name: true,
+            },
           },
         },
-      },
-      orderBy: {
-        createTime: 'desc', // 最新相册优先显示
-      },
-    });
+        orderBy: {
+          createTime: 'desc',
+        },
+      });
 
-    // 处理返回结果，添加类型名称
-    return albums.map((album) => ({
-      ...album,
-      typeName: album.albumType?.name || '未分类',
-      albumType: undefined, // 移除原始albumType对象
-    }));
+      const result = albums.map((album) => {
+        const safeAlbum = {
+          id: typeof album.id === 'bigint' ? album.id.toString() : album.id,
+          title: album.title || '',
+          coverPath: album.coverPath || '',
+          describe: album.describe || '',
+          type: album.type || 0,
+          typeName: album.albumType?.name || '未分类',
+          loopPicPath: album.loopPicPath || '',
+          createTime: album.createTime ? album.createTime.toISOString() : null,
+          updateTime: album.updateTime ? album.updateTime.toISOString() : null,
+        };
+
+        return safeAlbum;
+      });
+
+      return result;
+    } catch (error) {
+      console.error('查询相册列表失败:', error);
+      throw new Error('获取相册列表时发生错误');
+    }
   }
 
   // 按类型获取相册
@@ -89,7 +121,6 @@ export class AlbumsService {
 
   // 创建相册
   async create(createAlbumDto: CreateAlbumDto, userId: number) {
-    // 检查用户权限
     const user = await this.prisma.user.findUnique({
       where: { uid: userId },
     });
@@ -98,7 +129,6 @@ export class AlbumsService {
       throw new ForbiddenException('只有管理员才能发布相册');
     }
 
-    // 检查相册类型是否存在
     const albumType = await this.prisma.albumType.findUnique({
       where: { id: createAlbumDto.type },
     });
@@ -133,7 +163,6 @@ export class AlbumsService {
 
   // 更新相册
   async update(id: number, updateAlbumDto: UpdateAlbumDto, userId: number) {
-    // 检查相册是否存在
     const album = await this.prisma.album.findUnique({
       where: { id },
     });
@@ -142,7 +171,6 @@ export class AlbumsService {
       throw new NotFoundException(`相册ID ${id} 不存在`);
     }
 
-    // 检查用户权限
     const user = await this.prisma.user.findUnique({
       where: { uid: userId },
     });
@@ -151,7 +179,6 @@ export class AlbumsService {
       throw new ForbiddenException('只有管理员才能修改相册');
     }
 
-    // 检查相册类型是否存在
     if (updateAlbumDto.type) {
       const albumType = await this.prisma.albumType.findUnique({
         where: { id: updateAlbumDto.type },
@@ -183,7 +210,6 @@ export class AlbumsService {
 
   // 删除相册
   async remove(id: number, userId: number) {
-    // 检查相册是否存在
     const album = await this.prisma.album.findUnique({
       where: { id },
     });
@@ -192,7 +218,6 @@ export class AlbumsService {
       throw new NotFoundException(`相册ID ${id} 不存在`);
     }
 
-    // 检查用户权限
     const user = await this.prisma.user.findUnique({
       where: { uid: userId },
     });
