@@ -4,11 +4,16 @@ import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { AppModule } from './app.module';
 import helmet from 'helmet';
 import * as compression from 'compression';
+import * as express from 'express';
+import { join } from 'path';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   app.setGlobalPrefix('api');
+
+  const publicPath = join(process.cwd(), 'public');
+  app.use(express.static(publicPath));
 
   app.useGlobalPipes(
     new ValidationPipe({
@@ -31,6 +36,14 @@ async function bootstrap() {
   app.use(compression());
 
   app.enableCors();
+
+  app.use((req, res, next) => {
+    if (!req.path.startsWith('/api') && !req.path.startsWith('/docs')) {
+      res.sendFile(join(process.cwd(), 'public', 'index.html'));
+    } else {
+      next();
+    }
+  });
 
   await app.listen(3000);
 }
