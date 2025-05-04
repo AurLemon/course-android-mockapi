@@ -326,9 +326,7 @@ const confirmDeleteUser = (userData: User) => {
     acceptClass: 'p-button-danger',
     accept: async () => {
       try {
-        await axios.delete(`/api/users/delete`, {
-          params: { uid: userData.uid },
-        })
+        await axios.delete(`/api/users/delete/${userData.uid}`)
 
         await loadUsers()
 

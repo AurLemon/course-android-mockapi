@@ -141,13 +141,13 @@ export class UsersController {
     return { success: true };
   }
 
-  @Delete('delete')
+  @Delete('delete/:uid')
   @UseGuards(RolesGuard)
   @Roles(0)
   @ApiBearerAuth()
   @ApiOperation({ summary: '删除用户 (管理员)' })
   @ApiSuccessResponse({ success: true }, { description: '用户删除成功' })
-  async remove(@Query('uid', ParseIntPipe) uid: number) {
+  async remove(@Param('uid', ParseIntPipe) uid: number) {
     await this.usersService.remove(uid);
     return { success: true };
   }
