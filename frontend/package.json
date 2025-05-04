@@ -16,6 +16,7 @@
     "material-icons": "^1.13.14",
     "pinia": "^3.0.2",
     "prettier": "^3.5.3",
+    "primeicons": "^7.0.0",
     "primevue": "^4.3.3",
     "sass": "^1.87.0",
     "sass-loader": "^16.0.5",

@@ -5,6 +5,7 @@ import ConfirmationService from 'primevue/confirmationservice'
 import ToastService from 'primevue/toastservice'
 import Lara from '@primeuix/themes/lara'
 
+import 'primeicons/primeicons.css'
 import 'material-icons/iconfont/material-icons.css'
 import './assets/styles/global.scss'
 import './assets/styles/tailwind.css'
