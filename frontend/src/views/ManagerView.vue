@@ -7,7 +7,6 @@
   </div>
   <div v-else class="bg-gray-100 min-h-screen">
     <div class="flex h-screen">
-      <!-- Sidebar -->
       <div class="w-64 bg-blue-800 text-white p-4 flex flex-col">
         <div class="text-xl font-bold mb-8">学生管理系统</div>
 
@@ -39,11 +38,10 @@
         </div>
       </div>
 
-      <!-- Main Content -->
       <div class="flex-grow p-6 overflow-auto">
         <UserManagement v-if="activeMenu === 'users'" />
         <NoticeManagement v-else-if="activeMenu === 'notices'" />
-        <!-- <AlbumManagement v-else-if="activeMenu === 'albums'" /> -->
+        <AlbumManagement v-else-if="activeMenu === 'albums'" />
         <Dashboard v-else />
       </div>
     </div>
@@ -57,6 +55,7 @@ import { useRouter } from 'vue-router'
 import LoginForm from '@/components/manager/LoginForm.vue'
 import UserManagement from '@/components/manager/UserManagement.vue'
 import NoticeManagement from '@/components/manager/NoticeManagement.vue'
+import AlbumManagement from '@/components/manager/AlbumManagement.vue'
 import Dashboard from '@/components/manager/Dashboard.vue'
 
 const authStore = useAuthStore()

@@ -4,11 +4,10 @@
       <h2 class="text-2xl font-bold text-gray-800">通知管理</h2>
       <Button label="发布通知" icon="pi pi-plus" @click="openAddNoticeDialog" />
     </div>
-    
-    <!-- Notices List -->
-    <DataTable 
-      :value="notices" 
-      :paginator="true" 
+
+    <DataTable
+      :value="notices"
+      :paginator="true"
       :rows="10"
       class="p-datatable-sm"
       :loading="loading"
@@ -30,76 +29,65 @@
       <Column header="操作" style="width: 15%">
         <template #body="slotProps">
           <div class="flex gap-2">
-            <Button 
-              icon="pi pi-eye" 
-              class="p-button-sm p-button-secondary" 
+            <Button
+              icon="pi pi-eye"
+              class="p-button-sm p-button-secondary"
               @click="viewNotice(slotProps.data)"
             />
-            <Button 
-              icon="pi pi-pencil" 
-              class="p-button-sm p-button-info" 
+            <Button
+              icon="pi pi-pencil"
+              class="p-button-sm p-button-info"
               @click="editNotice(slotProps.data)"
             />
-            <Button 
-              icon="pi pi-trash" 
-              class="p-button-sm p-button-danger" 
+            <Button
+              icon="pi pi-trash"
+              class="p-button-sm p-button-danger"
               @click="confirmDeleteNotice(slotProps.data)"
             />
           </div>
         </template>
       </Column>
     </DataTable>
-    
-    <!-- Add/Edit Notice Dialog -->
-    <Dialog 
-      :visible="noticeDialog" 
+
+    <Dialog
+      :visible="noticeDialog"
       :style="{ width: '600px' }"
-      :header="editMode ? '编辑通知' : '发布通知'" 
+      :header="editMode ? '编辑通知' : '发布通知'"
       :modal="true"
       @update:visible="noticeDialog = false"
     >
       <div class="p-fluid">
         <div class="field mb-4">
           <label for="title">标题</label>
-          <InputText 
-            id="title" 
-            v-model="notice.title" 
-            required
-          />
+          <InputText id="title" v-model="notice.title" required />
         </div>
-        
+
         <div class="field mb-4">
           <label for="content">内容</label>
-          <Textarea 
-            id="content" 
-            v-model="notice.content" 
-            rows="8"
-            required
-          />
+          <Textarea id="content" v-model="notice.content" rows="8" required />
         </div>
       </div>
-      
+
       <template #footer>
-        <Button 
-          label="取消" 
-          icon="pi pi-times" 
-          class="p-button-text" 
+        <Button
+          label="取消"
+          icon="pi pi-times"
+          class="p-button-text"
           @click="noticeDialog = false"
         />
-        <Button 
-          label="保存" 
-          icon="pi pi-check" 
-          @click="saveNotice" 
+        <Button
+          label="保存"
+          icon="pi pi-check"
+          @click="saveNotice"
           :loading="saving"
         />
       </template>
     </Dialog>
-    
-    <!-- View Notice Dialog -->
-    <Dialog 
-      :visible="viewDialog" 
+
+    <Dialog
+      :visible="viewDialog"
       :style="{ width: '600px' }"
-      header="通知详情" 
+      header="通知详情"
       :modal="true"
       @update:visible="viewDialog = false"
     >
@@ -112,17 +100,12 @@
         </div>
         <div class="whitespace-pre-line">{{ selectedNotice.content }}</div>
       </div>
-      
+
       <template #footer>
-        <Button 
-          label="关闭" 
-          icon="pi pi-times" 
-          @click="viewDialog = false"
-        />
+        <Button label="关闭" icon="pi pi-times" @click="viewDialog = false" />
       </template>
     </Dialog>
-    
-    <!-- Delete Confirmation -->
+
     <ConfirmDialog></ConfirmDialog>
   </div>
 </template>
@@ -157,7 +140,7 @@ const toast = useToast()
 const notices = ref<Notice[]>([])
 const notice = ref<Notice>({
   title: '',
-  content: ''
+  content: '',
 })
 const selectedNotice = ref<Notice | null>(null)
 const loading = ref(false)
@@ -169,14 +152,14 @@ const editMode = ref(false)
 // Format date for display
 const formatDate = (dateStr: string) => {
   if (!dateStr) return ''
-  
+
   const date = new Date(dateStr)
   return new Intl.DateTimeFormat('zh-CN', {
     year: 'numeric',
     month: '2-digit',
     day: '2-digit',
     hour: '2-digit',
-    minute: '2-digit'
+    minute: '2-digit',
   }).format(date)
 }
 
@@ -196,7 +179,7 @@ const loadNotices = async () => {
       severity: 'error',
       summary: '加载失败',
       detail: '无法加载通知列表，请稍后再试',
-      life: 3000
+      life: 3000,
     })
   } finally {
     loading.value = false
@@ -206,7 +189,7 @@ const loadNotices = async () => {
 const openAddNoticeDialog = () => {
   notice.value = {
     title: '',
-    content: ''
+    content: '',
   }
   editMode.value = false
   noticeDialog.value = true
@@ -225,37 +208,37 @@ const viewNotice = async (noticeData: Notice) => {
 
 const saveNotice = async () => {
   saving.value = true
-  
+
   try {
     if (editMode.value && notice.value.id) {
       // Update notice
       await axios.post('/api/notices/modify', {
         id: notice.value.id,
         title: notice.value.title,
-        content: notice.value.content
+        content: notice.value.content,
       })
-      
+
       toast.add({
         severity: 'success',
         summary: '更新成功',
         detail: '通知已更新',
-        life: 3000
+        life: 3000,
       })
     } else {
       // Add new notice
       await axios.post('/api/notices/send', {
         title: notice.value.title,
-        content: notice.value.content
+        content: notice.value.content,
       })
-      
+
       toast.add({
         severity: 'success',
         summary: '发布成功',
         detail: '通知已发布',
-        life: 3000
+        life: 3000,
       })
     }
-    
+
     noticeDialog.value = false
     await loadNotices()
   } catch (error) {
@@ -264,7 +247,7 @@ const saveNotice = async () => {
       severity: 'error',
       summary: '保存失败',
       detail: '无法保存通知，请稍后再试',
-      life: 3000
+      life: 3000,
     })
   } finally {
     saving.value = false
@@ -280,14 +263,14 @@ const confirmDeleteNotice = (noticeData: Notice) => {
     accept: async () => {
       try {
         await axios.delete(`/api/notices/delete/${noticeData.id}`)
-        
+
         await loadNotices()
-        
+
         toast.add({
           severity: 'success',
           summary: '删除成功',
           detail: '通知已删除',
-          life: 3000
+          life: 3000,
         })
       } catch (error) {
         console.error('Failed to delete notice:', error)
@@ -295,10 +278,10 @@ const confirmDeleteNotice = (noticeData: Notice) => {
           severity: 'error',
           summary: '删除失败',
           detail: '无法删除通知，请稍后再试',
-          life: 3000
+          life: 3000,
         })
       }
-    }
+    },
   })
 }
 </script>
