@@ -3,14 +3,21 @@ import {
   Catch,
   ArgumentsHost,
   HttpException,
+  Logger,
 } from '@nestjs/common';
 import { Response } from 'express';
 
 @Catch()
 export class HttpExceptionFilter implements ExceptionFilter {
+  private readonly logger = new Logger(HttpExceptionFilter.name);
+
   catch(exception: unknown, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
+    this.logger.error(
+      '捕获到异常',
+      exception instanceof Error ? exception.stack : String(exception),
+    );
 
     if (exception instanceof Error) {
       const errorMessage = exception.message;
