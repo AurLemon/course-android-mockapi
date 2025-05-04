@@ -64,7 +64,7 @@ export class UsersController {
   @ApiOperation({ summary: '获取个人信息' })
   @ApiSuccessResponse(UserInfoResponseDto, { description: '返回用户信息' })
   async getOwnInfo(@Request() req) {
-    return this.usersService.findById(req.user.uid);
+    return this.usersService.findById(req.user.userId);
   }
 
   @Put('info/modify')
@@ -86,7 +86,7 @@ export class UsersController {
   @ApiOperation({ summary: '修改个人姓名' })
   @ApiSuccessResponse(UserInfoResponseDto, { description: '修改成功' })
   async updateName(@Request() req, @Body('trueName') trueName: string) {
-    await this.usersService.update(req.user.uid, { trueName });
+    await this.usersService.update(req.user.userId, { trueName });
     return { success: true };
   }
 
@@ -96,7 +96,7 @@ export class UsersController {
   @ApiOperation({ summary: '修改个人手机号' })
   @ApiSuccessResponse({ success: true }, { description: '修改成功' })
   async updatePhone(@Request() req, @Body('telephone') telephone: string) {
-    await this.usersService.update(req.user.uid, { telephone });
+    await this.usersService.update(req.user.userId, { telephone });
     return { success: true };
   }
 
@@ -106,7 +106,7 @@ export class UsersController {
   @ApiOperation({ summary: '修改个人出生日期' })
   @ApiSuccessResponse({ success: true }, { description: '修改成功' })
   async updateBirth(@Request() req, @Body('birth') birth: string) {
-    await this.usersService.update(req.user.uid, { birth });
+    await this.usersService.update(req.user.userId, { birth });
     return { success: true };
   }
 
@@ -116,7 +116,7 @@ export class UsersController {
   @ApiOperation({ summary: '修改个人性别' })
   @ApiSuccessResponse({ success: true }, { description: '修改成功' })
   async updateSex(@Request() req, @Body('sex') sex: string) {
-    await this.usersService.update(req.user.uid, { sex });
+    await this.usersService.update(req.user.userId, { sex });
     return { success: true };
   }
 
@@ -138,7 +138,7 @@ export class UsersController {
   @ApiOperation({ summary: '用户注销' })
   @ApiSuccessResponse({ success: true }, { description: '注销成功' })
   async logout(@Request() req) {
-    await this.usersService.logout(req.user.uid);
+    await this.usersService.logout(req.user.userId);
     return { success: true };
   }
 }

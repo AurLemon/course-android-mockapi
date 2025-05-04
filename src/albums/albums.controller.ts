@@ -63,7 +63,7 @@ export class AlbumsController {
   @ApiOperation({ summary: '发布相册 (管理员)' })
   @ApiSuccessResponse(AlbumResponseDto)
   async create(@Body() createAlbumDto: CreateAlbumDto, @Request() req) {
-    return this.albumsService.create(createAlbumDto, req.user.uid);
+    return this.albumsService.create(createAlbumDto, req.user.userId);
   }
 
   @Put('modify/:id')
@@ -77,7 +77,7 @@ export class AlbumsController {
     @Body() updateAlbumDto: UpdateAlbumDto,
     @Request() req,
   ) {
-    return this.albumsService.update(id, updateAlbumDto, req.user.uid);
+    return this.albumsService.update(id, updateAlbumDto, req.user.userId);
   }
 
   @Delete('delete/:id')
@@ -87,6 +87,6 @@ export class AlbumsController {
   @ApiOperation({ summary: '删除相册 (管理员)' })
   @ApiSuccessResponse({ success: true })
   async remove(@Param('id', ParseIntPipe) id: number, @Request() req) {
-    return this.albumsService.remove(id, req.user.uid);
+    return this.albumsService.remove(id, req.user.userId);
   }
 }

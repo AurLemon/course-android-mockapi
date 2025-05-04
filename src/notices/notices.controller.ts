@@ -47,7 +47,7 @@ export class NoticesController {
   @ApiOperation({ summary: '发布通知 (管理员)' })
   @ApiSuccessResponse(NoticeResponseDto)
   async create(@Body() createNoticeDto: CreateNoticeDto, @Request() req) {
-    return this.noticesService.create(createNoticeDto, req.user.uid);
+    return this.noticesService.create(createNoticeDto, req.user.userId);
   }
 
   @Post('modify')
@@ -61,7 +61,7 @@ export class NoticesController {
     @Body() updateNoticeDto: UpdateNoticeDto,
     @Request() req,
   ) {
-    return this.noticesService.update(id, updateNoticeDto, req.user.uid);
+    return this.noticesService.update(id, updateNoticeDto, req.user.userId);
   }
 
   @Delete('delete/:id')
@@ -71,6 +71,6 @@ export class NoticesController {
   @ApiOperation({ summary: '删除通知 (管理员)' })
   @ApiSuccessResponse({ success: true })
   async remove(@Param('id', ParseIntPipe) id: number, @Request() req) {
-    return this.noticesService.remove(id, req.user.uid);
+    return this.noticesService.remove(id, req.user.userId);
   }
 }
