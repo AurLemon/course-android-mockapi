@@ -1,11 +1,7 @@
 <template>
   <div
-    class="page-home h-full p-10 justify-center items-center bg-animated"
+    class="page-home h-full p-10 justify-center items-center"
   >
-    <div class="corner tl"></div>
-    <div class="corner tr"></div>
-    <div class="corner br"></div>
-    <div class="corner bl"></div>
 
     <div class="main flex flex-col justify-between items-center p-4 pb-15">
       <main
@@ -58,97 +54,6 @@
 
 <style lang="scss" scoped>
 .page-home {
-  @keyframes cornerFade {
-    0% {
-      opacity: 0;
-    }
-    10% {
-      opacity: 1;
-    }
-    23% {
-      opacity: 1;
-    }
-    33% {
-      opacity: 0;
-    }
-    100% {
-      opacity: 0;
-    }
-  }
-
-  &.bg-animated {
-    position: relative;
-    overflow: hidden;
-
-    &::before,
-    &::after,
-    .corner {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      z-index: -1;
-    }
-
-    .corner {
-      background-size: cover;
-      background-repeat: no-repeat;
-      opacity: 0;
-      transition: opacity 4s ease-in-out;
-    }
-
-    .corner.tl {
-      background: linear-gradient(
-        to bottom right,
-        rgba(183, 232, 255, 0.175),
-        transparent 70%
-      );
-      animation: cornerFade 8s infinite ease-in-out;
-      animation-delay: 0s;
-    }
-
-    .corner.tr {
-      background: linear-gradient(
-        to bottom left,
-        rgba(255, 204, 255, 0.175),
-        transparent 70%
-      );
-      animation: cornerFade 8s infinite ease-in-out;
-      animation-delay: 2s;
-    }
-
-    .corner.br {
-      background: linear-gradient(
-        to top left,
-        rgba(204, 255, 224, 0.175),
-        transparent 70%
-      );
-      animation: cornerFade 8s infinite ease-in-out;
-      animation-delay: 4s;
-    }
-
-    .corner.bl {
-      background: linear-gradient(
-        to top right,
-        rgba(255, 230, 200, 0.175),
-        transparent 70%
-      );
-      animation: cornerFade 8s infinite ease-in-out;
-      animation-delay: 6s;
-    }
-
-    &::after {
-      background: radial-gradient(
-        circle at center,
-        rgba(255, 255, 255, 0.8) 0%,
-        rgba(255, 255, 255, 0.4) 40%,
-        transparent 70%
-      );
-    }
-  }
-
   .logo {
     margin-bottom: 2rem;
 
