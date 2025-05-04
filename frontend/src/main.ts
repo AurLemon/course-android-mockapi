@@ -1,6 +1,8 @@
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
 import PrimeVue from 'primevue/config'
+import ConfirmationService from 'primevue/confirmationservice'
+import ToastService from 'primevue/toastservice'
 import Lara from '@primeuix/themes/lara'
 
 import 'material-icons/iconfont/material-icons.css'
@@ -19,5 +21,7 @@ app.use(PrimeVue, {
     preset: Lara,
   },
 })
+app.use(ConfirmationService)
+app.use(ToastService)
 
 app.mount('#app')
