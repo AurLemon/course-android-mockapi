@@ -8,6 +8,7 @@ import {
   UseGuards,
   Request,
   ParseIntPipe,
+  Query,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { NoticesService } from './notices.service';
@@ -42,7 +43,7 @@ export class NoticesController {
 
   @Post('send')
   @UseGuards(RolesGuard)
-  @Roles(0) // 只有管理员可以发布通知
+  @Roles(0)
   @ApiBearerAuth()
   @ApiOperation({ summary: '发布通知 (管理员)' })
   @ApiSuccessResponse(NoticeResponseDto)
@@ -52,7 +53,7 @@ export class NoticesController {
 
   @Post('modify')
   @UseGuards(RolesGuard)
-  @Roles(0) // 只有管理员可以修改通知
+  @Roles(0)
   @ApiBearerAuth()
   @ApiOperation({ summary: '修改通知 (管理员)' })
   @ApiSuccessResponse(NoticeResponseDto)
@@ -66,11 +67,11 @@ export class NoticesController {
 
   @Delete('delete/:id')
   @UseGuards(RolesGuard)
-  @Roles(0) // 只有管理员可以删除通知
+  @Roles(0)
   @ApiBearerAuth()
   @ApiOperation({ summary: '删除通知 (管理员)' })
   @ApiSuccessResponse({ success: true })
-  async remove(@Param('id', ParseIntPipe) id: number, @Request() req) {
+  async remove(@Query('id', ParseIntPipe) id: number, @Request() req) {
     return this.noticesService.remove(id, req.user.userId);
   }
 }

@@ -9,6 +9,7 @@ import {
   Request,
   ParseIntPipe,
   Put,
+  Query,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { AlbumsService } from './albums.service';
@@ -58,7 +59,7 @@ export class AlbumsController {
 
   @Post('send')
   @UseGuards(RolesGuard)
-  @Roles(0) // 只有管理员可以发布相册
+  @Roles(0)
   @ApiBearerAuth()
   @ApiOperation({ summary: '发布相册 (管理员)' })
   @ApiSuccessResponse(AlbumResponseDto)
@@ -68,7 +69,7 @@ export class AlbumsController {
 
   @Put('modify/:id')
   @UseGuards(RolesGuard)
-  @Roles(0) // 只有管理员可以修改相册
+  @Roles(0)
   @ApiBearerAuth()
   @ApiOperation({ summary: '修改相册 (管理员)' })
   @ApiSuccessResponse(AlbumResponseDto)
@@ -82,11 +83,11 @@ export class AlbumsController {
 
   @Delete('delete/:id')
   @UseGuards(RolesGuard)
-  @Roles(0) // 只有管理员可以删除相册
+  @Roles(0)
   @ApiBearerAuth()
   @ApiOperation({ summary: '删除相册 (管理员)' })
   @ApiSuccessResponse({ success: true })
-  async remove(@Param('id', ParseIntPipe) id: number, @Request() req) {
+  async remove(@Query('id', ParseIntPipe) id: number, @Request() req) {
     return this.albumsService.remove(id, req.user.userId);
   }
 }

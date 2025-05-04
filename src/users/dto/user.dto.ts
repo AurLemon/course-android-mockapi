@@ -158,3 +158,23 @@ export class UserInfoResponseDto {
   @ApiProperty({ example: 1 })
   role: number;
 }
+
+export class ModifyTrueNameDto {
+  @ApiProperty({ example: '林檬' })
+  trueName: string;
+}
+
+export class ModifyTelephoneDto {
+  @ApiProperty({ example: '13300000000' })
+  telephone: string;
+}
+
+export class ModifySexDto {
+  @ApiProperty({ example: '男' })
+  sex: string;
+}
+
+export class ModifyBirthdateDto {
+  @ApiProperty({ example: '2006-05-18' })
+  birth: string;
+}
