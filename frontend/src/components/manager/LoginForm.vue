@@ -1,6 +1,6 @@
 <template>
   <div class="rounded-lg w-96">
-    <h2 class="text-2xl font-semibold mb-6 text-center text-blue-800">
+    <h2 class="text-2xl font-semibold mb-6 text-center text-[var(--color-text)]">
       管理员登录
     </h2>
 
@@ -10,7 +10,7 @@
 
     <form @submit.prevent="handleLogin" class="space-y-4">
       <div>
-        <label class="block mb-1 font-medium">用户名</label>
+        <label class="block mb-1 font-medium text-[var(--color-text--subtle)]">用户名</label>
         <InputText
           v-model="username"
           type="text"
@@ -21,7 +21,7 @@
       </div>
 
       <div>
-        <label class="block mb-1 font-medium">密码</label>
+        <label class="block mb-1 font-medium text-[var(--color-text--subtle)]">密码</label>
         <InputText
           v-model="password"
           type="password"

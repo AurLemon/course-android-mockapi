@@ -63,7 +63,7 @@ const menuItems = [
 
 const logout = async () => {
   await authStore.logout()
-  router.push('/')
+  router.push('/manager/login')
 }
 </script>
 
