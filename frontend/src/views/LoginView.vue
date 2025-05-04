@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-gray-100 min-h-screen flex items-center justify-center">
+  <div class="items-center justify-center">
     <LoginForm @login-success="onLoginSuccess" />
   </div>
 </template>

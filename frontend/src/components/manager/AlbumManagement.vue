@@ -276,7 +276,7 @@ const getLoopPicPaths = (albumData: Album) => {
 
 const handleImageError = (event: Event) => {
   const target = event.target as HTMLImageElement
-  target.src = 'https://via.placeholder.com/150?text=Image+Not+Found'
+  target.src = ''
 }
 
 const formatDate = (dateStr: string | undefined) => {

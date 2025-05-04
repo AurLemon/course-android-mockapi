@@ -13,7 +13,7 @@ const router = createRouter({
       component: HomeView,
     },
     {
-      path: '/login',
+      path: '/manager/login',
       name: 'Login',
       component: () => import('../views/LoginView.vue'),
     },
@@ -53,12 +53,19 @@ router.beforeEach((to, from, next) => {
     window.location.href = to.fullPath
     return
   }
+
   const requiresAuth = to.matched.some((record) => record.meta.requiresAuth)
   const authStore = useAuthStore()
 
   if (requiresAuth && !authStore.isLoggedIn) {
+    if (to.name === 'Login') {
+      next()
+      return
+    }
+
     sessionStorage.setItem('redirectPath', to.fullPath)
-    next({ name: 'Login' })
+
+    next({ path: '/manager/login' })
   } else {
     next()
   }
