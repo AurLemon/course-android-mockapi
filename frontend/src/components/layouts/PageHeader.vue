@@ -40,7 +40,7 @@
   top: 0;
   left: 0;
   right: 0;
-  z-index: 99999;
+  z-index: 100;
   background-color: var(--background-light-1);
   border-bottom: 1px solid var(--border-color-base);
   backdrop-filter: blur(12px);

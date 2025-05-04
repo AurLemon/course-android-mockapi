@@ -2,17 +2,26 @@
   <div>
     <div class="flex justify-between items-center mb-6">
       <h2 class="text-2xl font-semibold text-gray-800">用户管理</h2>
-      <Button label="添加用户" icon="pi pi-plus" @click="openAddUserDialog" />
+      <Button
+        label="添加用户"
+        icon="pi pi-plus"
+        size="small"
+        @click="openAddUserDialog"
+      />
     </div>
 
     <DataTable
       :value="users"
       :paginator="true"
       :rows="15"
-      class="p-datatable-sm"
+      class="p-datatable-sm rounded-lg"
       :loading="loading"
-      stripedRows
+      :rowClass="rowClass"
       responsiveLayout="scroll"
+      :emptyMessage="'暂无用户数据'"
+      :removableSort="true"
+      :sortMode="'multiple'"
+      style="min-height: 300px"
     >
       <Column field="uid" header="ID" sortable style="width: 5%"></Column>
       <Column
@@ -65,63 +74,75 @@
       @update:visible="userDialog = false"
     >
       <div class="p-fluid">
-        <div class="field mb-4">
+        <div class="field mb-4 flex items-center gap-[0.5rem]">
           <label for="username">学号</label>
           <InputText
             id="username"
             v-model="user.username"
             :disabled="editMode"
+            class="ml-auto w-80"
             required
           />
         </div>
 
-        <div class="field mb-4" v-if="!editMode">
+        <div class="field mb-4 flex items-center gap-[0.5rem]" v-if="!editMode">
           <label for="password">密码</label>
           <Password
             id="password"
             v-model="user.password"
             :feedback="false"
+            class="ml-auto w-80"
             toggleMask
             required
           />
         </div>
 
-        <div class="field mb-4">
+        <div class="field mb-4 flex items-center gap-[0.5rem]">
           <label for="trueName">真实姓名</label>
-          <InputText id="trueName" v-model="user.trueName" />
+          <InputText
+            id="trueName"
+            v-model="user.trueName"
+            class="ml-auto w-80"
+          />
         </div>
 
-        <div class="field mb-4">
+        <div class="field mb-4 flex items-center gap-[0.5rem]">
           <label for="sex">性别</label>
           <Dropdown
             id="sex"
             v-model="user.sex"
+            class="ml-auto w-80"
             :options="['男', '女']"
             placeholder="选择性别"
           />
         </div>
 
-        <div class="field mb-4">
+        <div class="field mb-4 flex items-center gap-[0.5rem]">
           <label for="telephone">电话</label>
-          <InputText id="telephone" v-model="user.telephone" />
+          <InputText
+            id="telephone"
+            v-model="user.telephone"
+            class="ml-auto w-80"
+          />
         </div>
 
-        <div class="field mb-4">
+        <div class="field mb-4 flex items-center gap-[0.5rem]">
           <label for="birth">出生日期</label>
           <Calendar
             id="birth"
             v-model="birthDate"
+            class="ml-auto w-80"
             dateFormat="yy-mm-dd"
             :showIcon="true"
           />
         </div>
 
-        <div class="field mb-4">
+        <div class="field mb-4 flex items-center gap-[0.5rem]">
           <label for="dept">专业班级</label>
-          <InputText id="dept" v-model="user.dept" />
+          <InputText id="dept" v-model="user.dept" class="ml-auto w-80" />
         </div>
 
-        <div class="field mb-4">
+        <div class="field mb-4 flex items-center gap-[0.5rem]">
           <label for="role">角色</label>
           <Dropdown
             id="role"
@@ -132,6 +153,7 @@
             ]"
             optionLabel="label"
             optionValue="value"
+            class="ml-auto w-80"
             placeholder="选择角色"
           />
         </div>
@@ -253,6 +275,13 @@ const openAddUserDialog = () => {
   birthDate.value = null
   editMode.value = false
   userDialog.value = true
+}
+
+const rowClass = (data) => {
+  return {
+    'bg-red-50': data.role === 0,
+    'bg-green-50': data.role === 1,
+  }
 }
 
 const editUser = (userData: User) => {

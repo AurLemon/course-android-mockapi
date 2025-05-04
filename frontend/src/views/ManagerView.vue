@@ -66,3 +66,14 @@ const logout = async () => {
   router.push('/')
 }
 </script>
+
+<style lang="scss">
+:deep(.p-datatable) {
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+:deep(.p-datatable-paginator-bottom) {
+  border-color: transparent;
+}
+</style>

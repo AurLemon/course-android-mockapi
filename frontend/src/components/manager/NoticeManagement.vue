@@ -2,17 +2,21 @@
   <div>
     <div class="flex justify-between items-center mb-6">
       <h2 class="text-2xl font-semibold text-gray-800">通知管理</h2>
-      <Button label="发布通知" icon="pi pi-plus" @click="openAddNoticeDialog" />
+      <Button label="发布通知" icon="pi pi-plus" size="small" @click="openAddNoticeDialog" />
     </div>
 
     <DataTable
       :value="notices"
       :paginator="true"
       :rows="15"
-      class="p-datatable-sm"
+      class="p-datatable-sm rounded-lg"
       :loading="loading"
-      stripedRows
+      :rowClass="rowClass"
       responsiveLayout="scroll"
+      :emptyMessage="'暂无通知数据'"
+      :removableSort="true"
+      :sortMode="'multiple'"
+      style="min-height: 300px"
     >
       <Column field="id" header="ID" sortable style="width: 5%"></Column>
       <Column field="title" header="标题" sortable style="width: 25%"></Column>
@@ -57,14 +61,14 @@
       @update:visible="noticeDialog = false"
     >
       <div class="p-fluid">
-        <div class="field mb-4">
+        <div class="field mb-4 flex items-center gap-[0.5rem]">
           <label for="title">标题</label>
-          <InputText id="title" v-model="notice.title" required />
+          <InputText id="title" v-model="notice.title" required class="ml-auto w-120" />
         </div>
 
-        <div class="field mb-4">
+        <div class="field mb-4 flex items-center gap-[0.5rem]">
           <label for="content">内容</label>
-          <Textarea id="content" v-model="notice.content" rows="8" required />
+          <Textarea id="content" v-model="notice.content" rows="8" required class="ml-auto w-120" />
         </div>
       </div>
 
@@ -149,7 +153,6 @@ const noticeDialog = ref(false)
 const viewDialog = ref(false)
 const editMode = ref(false)
 
-// Format date for display
 const formatDate = (dateStr: string) => {
   if (!dateStr) return ''
 
@@ -163,7 +166,13 @@ const formatDate = (dateStr: string) => {
   }).format(date)
 }
 
-// Load notices on component mount
+const rowClass = (data) => {
+  return {
+    'bg-blue-50': data.id % 2 === 0,
+    'bg-gray-50': data.id % 2 !== 0,
+  }
+}
+
 onMounted(async () => {
   await loadNotices()
 })
@@ -211,7 +220,6 @@ const saveNotice = async () => {
 
   try {
     if (editMode.value && notice.value.id) {
-      // Update notice
       await axios.post('/api/notices/modify', {
         id: notice.value.id,
         title: notice.value.title,
@@ -225,7 +233,6 @@ const saveNotice = async () => {
         life: 3000,
       })
     } else {
-      // Add new notice
       await axios.post('/api/notices/send', {
         title: notice.value.title,
         content: notice.value.content,

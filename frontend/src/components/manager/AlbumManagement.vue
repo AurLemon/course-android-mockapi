@@ -2,17 +2,26 @@
   <div>
     <div class="flex justify-between items-center mb-6">
       <h2 class="text-2xl font-semibold text-gray-800">相册管理</h2>
-      <Button label="发布相册" icon="pi pi-plus" @click="openAddAlbumDialog" />
+      <Button
+        label="发布相册"
+        icon="pi pi-plus"
+        size="small"
+        @click="openAddAlbumDialog"
+      />
     </div>
 
     <DataTable
       :value="albums"
       :paginator="true"
       :rows="15"
-      class="p-datatable-sm"
+      class="p-datatable-sm rounded-lg"
       :loading="loading"
-      stripedRows
+      :rowClass="rowClass"
       responsiveLayout="scroll"
+      :emptyMessage="'暂无相册数据'"
+      :removableSort="true"
+      :sortMode="'multiple'"
+      style="min-height: 300px"
     >
       <Column field="id" header="ID" sortable style="width: 5%"></Column>
       <Column field="title" header="标题" sortable style="width: 15%"></Column>
@@ -72,12 +81,17 @@
       @update:visible="albumDialog = false"
     >
       <div class="p-fluid">
-        <div class="field mb-4">
+        <div class="field mb-4 flex items-center gap-[0.5rem]">
           <label for="title">标题</label>
-          <InputText id="title" v-model="album.title" required />
+          <InputText
+            id="title"
+            v-model="album.title"
+            required
+            class="ml-auto w-120"
+          />
         </div>
 
-        <div class="field mb-4">
+        <div class="field mb-4 flex items-center gap-[0.5rem]">
           <label for="type">分类</label>
           <Dropdown
             id="type"
@@ -86,22 +100,35 @@
             optionLabel="name"
             optionValue="id"
             placeholder="选择相册分类"
+            class="ml-auto w-120"
           />
         </div>
 
-        <div class="field mb-4">
+        <div class="field mb-4 flex items-center gap-[0.5rem]">
           <label for="describe">描述</label>
-          <Textarea id="describe" v-model="album.describe" rows="3" />
+          <Textarea
+            id="describe"
+            v-model="album.describe"
+            rows="3"
+            class="ml-auto w-120"
+          />
         </div>
 
-        <div class="field mb-4">
+        <div class="field mb-4 flex items-center gap-[0.5rem]">
           <label for="coverPath">封面图路径</label>
-          <InputText id="coverPath" v-model="album.coverPath" required />
+          <InputText
+            id="coverPath"
+            v-model="album.coverPath"
+            required
+            class="ml-auto w-120"
+          />
         </div>
 
-        <div class="mb-2">
+        <div class="mb-2 flex items-center gap-[0.5rem]">
           <label class="block mb-1">封面预览</label>
-          <div class="bg-gray-100 p-2 rounded-lg flex justify-center">
+          <div
+            class="bg-gray-100 p-2 rounded-lg flex justify-center ml-auto w-120"
+          >
             <img
               :src="album.coverPath"
               class="max-w-full h-40 object-contain"
@@ -111,13 +138,17 @@
           </div>
         </div>
 
-        <div class="field mb-4">
-          <label for="loopPicPath">轮播图路径 (多个图片用逗号分隔)</label>
+        <div class="field mb-4 flex items-center gap-[0.5rem]">
+          <label for="loopPicPath"
+            >轮播图路径<br />
+            (多个图片用逗号分隔)</label
+          >
           <Textarea
             id="loopPicPath"
             v-model="album.loopPicPath"
             rows="3"
             required
+            class="ml-auto w-120"
           />
         </div>
 
@@ -172,7 +203,9 @@
             @error="handleImageError"
           />
           <div>
-            <h3 class="text-2xl font-semibold mb-2">{{ selectedAlbum.title }}</h3>
+            <h3 class="text-2xl font-semibold mb-2">
+              {{ selectedAlbum.title }}
+            </h3>
             <p class="text-gray-600 mb-2">{{ selectedAlbum.describe }}</p>
             <div class="flex items-center gap-2">
               <Tag :value="selectedAlbum.typeName" severity="info" />
@@ -372,7 +405,6 @@ const saveAlbum = async () => {
         life: 3000,
       })
     } else {
-      // 添加新相册
       await axios.post('/api/albums/send', {
         title: album.value.title,
         coverPath: album.value.coverPath,
@@ -401,6 +433,16 @@ const saveAlbum = async () => {
     })
   } finally {
     saving.value = false
+  }
+}
+
+const rowClass = (data) => {
+  return {
+    'bg-blue-50': data.type === 1,
+    'bg-purple-50': data.type === 2,
+    'bg-amber-50': data.type === 3,
+    'bg-emerald-50': data.type === 4,
+    'bg-gray-50': !data.type,
   }
 }
 
