@@ -90,7 +90,7 @@ export class UsersController {
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: '修改个人姓名' })
-  @ApiSuccessResponse(UserInfoResponseDto, { description: '修改成功' })
+  @ApiSuccessResponse({ success: true }, { description: '修改成功' })
   async updateName(
     @Request() req,
     @Body() modifyTrueNameDto: ModifyTrueNameDto,

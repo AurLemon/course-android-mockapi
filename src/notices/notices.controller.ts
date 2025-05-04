@@ -71,7 +71,7 @@ export class NoticesController {
   @ApiBearerAuth()
   @ApiOperation({ summary: '删除通知 (管理员)' })
   @ApiSuccessResponse({ success: true })
-  async remove(@Query('id', ParseIntPipe) id: number, @Request() req) {
+  async remove(@Param('id', ParseIntPipe) id: number, @Request() req) {
     return this.noticesService.remove(id, req.user.userId);
   }
 }
