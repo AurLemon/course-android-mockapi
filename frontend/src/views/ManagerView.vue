@@ -1,3 +1,5 @@
 <template>
-  <div class="manager"></div>
+  <div class="home-manager">
+    
+  </div>
 </template>
