@@ -1,14 +1,14 @@
 <template>
   <div>
     <div class="flex justify-between items-center mb-6">
-      <h2 class="text-2xl font-bold text-gray-800">相册管理</h2>
+      <h2 class="text-2xl font-semibold text-gray-800">相册管理</h2>
       <Button label="发布相册" icon="pi pi-plus" @click="openAddAlbumDialog" />
     </div>
 
     <DataTable
       :value="albums"
       :paginator="true"
-      :rows="10"
+      :rows="15"
       class="p-datatable-sm"
       :loading="loading"
       stripedRows
@@ -20,7 +20,7 @@
         <template #body="slotProps">
           <img
             :src="slotProps.data.coverPath"
-            class="w-16 h-16 object-cover rounded-md"
+            class="w-16 h-16 object-cover rounded-lg"
             :alt="slotProps.data.title"
             @error="handleImageError"
           />
@@ -101,7 +101,7 @@
 
         <div class="mb-2">
           <label class="block mb-1">封面预览</label>
-          <div class="bg-gray-100 p-2 rounded-md flex justify-center">
+          <div class="bg-gray-100 p-2 rounded-lg flex justify-center">
             <img
               :src="album.coverPath"
               class="max-w-full h-40 object-contain"
@@ -127,7 +127,7 @@
             <div
               v-for="(path, index) in loopPicPaths"
               :key="index"
-              class="bg-gray-100 p-2 rounded-md"
+              class="bg-gray-100 p-2 rounded-lg"
             >
               <img
                 :src="path"
@@ -167,12 +167,12 @@
         <div class="flex mb-6 gap-4">
           <img
             :src="selectedAlbum.coverPath"
-            class="w-40 h-40 object-cover rounded-md shadow-md"
+            class="w-40 h-40 object-cover rounded-lg shadow-md"
             :alt="selectedAlbum.title"
             @error="handleImageError"
           />
           <div>
-            <h3 class="text-2xl font-bold mb-2">{{ selectedAlbum.title }}</h3>
+            <h3 class="text-2xl font-semibold mb-2">{{ selectedAlbum.title }}</h3>
             <p class="text-gray-600 mb-2">{{ selectedAlbum.describe }}</p>
             <div class="flex items-center gap-2">
               <Tag :value="selectedAlbum.typeName" severity="info" />
@@ -194,7 +194,7 @@
             <div class="flex justify-center p-2">
               <img
                 :src="slotProps.data"
-                class="max-w-full max-h-96 object-contain rounded-md"
+                class="max-w-full max-h-96 object-contain rounded-lg"
                 @error="handleImageError"
               />
             </div>

@@ -1,14 +1,14 @@
 <template>
   <div>
     <div class="flex justify-between items-center mb-6">
-      <h2 class="text-2xl font-bold text-gray-800">通知管理</h2>
+      <h2 class="text-2xl font-semibold text-gray-800">通知管理</h2>
       <Button label="发布通知" icon="pi pi-plus" @click="openAddNoticeDialog" />
     </div>
 
     <DataTable
       :value="notices"
       :paginator="true"
-      :rows="10"
+      :rows="15"
       class="p-datatable-sm"
       :loading="loading"
       stripedRows
@@ -92,7 +92,7 @@
       @update:visible="viewDialog = false"
     >
       <div v-if="selectedNotice">
-        <h3 class="text-xl font-bold mb-4">{{ selectedNotice.title }}</h3>
+        <h3 class="text-xl font-semibold mb-4">{{ selectedNotice.title }}</h3>
         <div class="text-sm text-gray-500 mb-4">
           发布时间: {{ formatDate(selectedNotice.createdAt) }}
           <span class="mx-2">|</span>

@@ -1,14 +1,14 @@
 <template>
   <div>
     <div class="flex justify-between items-center mb-6">
-      <h2 class="text-2xl font-bold text-gray-800">用户管理</h2>
+      <h2 class="text-2xl font-semibold text-gray-800">用户管理</h2>
       <Button label="添加用户" icon="pi pi-plus" @click="openAddUserDialog" />
     </div>
 
     <DataTable
       :value="users"
       :paginator="true"
-      :rows="10"
+      :rows="15"
       class="p-datatable-sm"
       :loading="loading"
       stripedRows

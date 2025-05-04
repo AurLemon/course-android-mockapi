@@ -1,16 +1,16 @@
 <template>
   <div>
-    <h1 class="text-2xl font-bold mb-6">系统仪表盘</h1>
+    <h1 class="text-2xl font-semibold mb-6">系统仪表盘</h1>
 
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
       <div class="bg-white rounded-lg shadow p-6">
         <div class="flex items-center">
-          <div class="rounded-full bg-blue-100 p-3 mr-4">
-            <i class="pi pi-users text-blue-500 text-xl"></i>
+          <div class="flex justify-center items-center rounded-full bg-blue-100 p-3 mr-4">
+            <i class="block pi pi-users text-blue-500 text-xl"></i>
           </div>
           <div>
-            <h3 class="text-lg font-semibold text-gray-700">用户总数</h3>
-            <p class="text-3xl font-bold text-blue-600">
+            <h3 class="text-sm font-semibold text-[var(--color-text--subtle)]">用户总数</h3>
+            <p class="text-3xl font-semibold text-blue-600">
               {{ stats.userCount }}
             </p>
           </div>
@@ -19,12 +19,12 @@
 
       <div class="bg-white rounded-lg shadow p-6">
         <div class="flex items-center">
-          <div class="rounded-full bg-green-100 p-3 mr-4">
-            <i class="pi pi-bell text-green-500 text-xl"></i>
+          <div class="flex justify-center items-center rounded-full bg-green-100 p-3 mr-4">
+            <i class="block pi pi-bell text-green-500 text-xl"></i>
           </div>
           <div>
-            <h3 class="text-lg font-semibold text-gray-700">通知总数</h3>
-            <p class="text-3xl font-bold text-green-600">
+            <h3 class="text-sm font-semibold text-[var(--color-text--subtle)]">通知总数</h3>
+            <p class="text-3xl font-semibold text-green-600">
               {{ stats.noticeCount }}
             </p>
           </div>
@@ -33,12 +33,12 @@
 
       <div class="bg-white rounded-lg shadow p-6">
         <div class="flex items-center">
-          <div class="rounded-full bg-purple-100 p-3 mr-4">
-            <i class="pi pi-images text-purple-500 text-xl"></i>
+          <div class="flex justify-center items-center rounded-full bg-purple-100 p-3 mr-4">
+            <i class="block pi pi-images text-purple-500 text-xl"></i>
           </div>
           <div>
-            <h3 class="text-lg font-semibold text-gray-700">相册总数</h3>
-            <p class="text-3xl font-bold text-purple-600">
+            <h3 class="text-sm font-semibold text-[var(--color-text--subtle)]">相册总数</h3>
+            <p class="text-3xl font-semibold text-purple-600">
               {{ stats.albumCount }}
             </p>
           </div>
@@ -47,7 +47,7 @@
     </div>
 
     <div class="bg-white rounded-lg shadow p-6 mb-8">
-      <h2 class="text-xl font-bold mb-4">最近通知</h2>
+      <h2 class="text-xl font-semibold mb-4">最近通知</h2>
 
       <DataTable
         :value="recentNotices"
@@ -68,7 +68,7 @@
     </div>
 
     <div class="bg-white rounded-lg shadow p-6">
-      <h2 class="text-xl font-bold mb-4">系统信息</h2>
+      <h2 class="text-xl font-semibold mb-4">系统信息</h2>
 
       <div class="grid grid-cols-2 gap-4">
         <div>
