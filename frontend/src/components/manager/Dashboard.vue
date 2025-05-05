@@ -5,12 +5,12 @@
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
       <div class="bg-white rounded-lg shadow p-6">
         <div class="flex items-center">
-          <div class="flex justify-center items-center rounded-full bg-blue-100 p-3 mr-4">
-            <i class="block pi pi-users text-blue-500 text-xl"></i>
+          <div class="flex justify-center items-center rounded-full bg-[var(--background-color-primary--hover)] p-3 mr-4">
+            <i class="block pi pi-users text-[var(--color-primary)] text-xl"></i>
           </div>
           <div>
             <h3 class="text-sm font-semibold text-[var(--color-text--subtle)]">用户总数</h3>
-            <p class="text-3xl font-semibold text-blue-600">
+            <p class="text-3xl font-semibold text-[var(--color-primary)]">
               {{ stats.userCount }}
             </p>
           </div>
@@ -19,12 +19,12 @@
 
       <div class="bg-white rounded-lg shadow p-6">
         <div class="flex items-center">
-          <div class="flex justify-center items-center rounded-full bg-green-100 p-3 mr-4">
-            <i class="block pi pi-bell text-green-500 text-xl"></i>
+          <div class="flex justify-center items-center rounded-full bg-[var(--background-color-primary--hover)] p-3 mr-4">
+            <i class="block pi pi-bell text-[var(--color-primary)] text-xl"></i>
           </div>
           <div>
             <h3 class="text-sm font-semibold text-[var(--color-text--subtle)]">通知总数</h3>
-            <p class="text-3xl font-semibold text-green-600">
+            <p class="text-3xl font-semibold text-[var(--color-primary)]">
               {{ stats.noticeCount }}
             </p>
           </div>
@@ -33,12 +33,12 @@
 
       <div class="bg-white rounded-lg shadow p-6">
         <div class="flex items-center">
-          <div class="flex justify-center items-center rounded-full bg-purple-100 p-3 mr-4">
-            <i class="block pi pi-images text-purple-500 text-xl"></i>
+          <div class="flex justify-center items-center rounded-full bg-[var(--background-color-primary--hover)] p-3 mr-4">
+            <i class="block pi pi-images text-[var(--color-primary)] text-xl"></i>
           </div>
           <div>
             <h3 class="text-sm font-semibold text-[var(--color-text--subtle)]">相册总数</h3>
-            <p class="text-3xl font-semibold text-purple-600">
+            <p class="text-3xl font-semibold text-[var(--color-primary)]">
               {{ stats.albumCount }}
             </p>
           </div>
