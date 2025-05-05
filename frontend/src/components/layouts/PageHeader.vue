@@ -5,15 +5,18 @@
       <RouterLink to="/" class="page-header-link" :active-class="'active'"
         >介绍</RouterLink
       >
-      <RouterLink to="/docs" class="page-header-link" :active-class="'active'"
-        >文档</RouterLink
-      >
       <RouterLink
         to="/manager"
         class="page-header-link"
         :active-class="'active'"
-        :class="{ 'active': $route.path.startsWith('/manager') }"
+        :class="{ active: $route.path.startsWith('/manager') }"
         >后台</RouterLink
+      >
+      <RouterLink to="/demo" class="page-header-link" :active-class="'active'"
+        >演示</RouterLink
+      >
+      <RouterLink to="/docs" class="page-header-link" :active-class="'active'"
+        >文档</RouterLink
       >
     </div>
     <div class="page-header-repo flex justify-end">

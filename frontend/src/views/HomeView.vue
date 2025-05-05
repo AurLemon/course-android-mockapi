@@ -22,7 +22,10 @@
             移动应用开发课程（Android）模拟 API
           </p>
         </div>
-        <a href="/docs" class="block see-docs">查看文档</a>
+        <div class="links flex gap-2">
+          <a href="/docs" class="block see-link docs">查看文档</a>
+          <RouterLink to="/demo" class="block see-link demo">查看演示</RouterLink>
+        </div>
       </main>
     </div>
 
@@ -68,7 +71,7 @@
     }
   }
 
-  .see-docs {
+  .see-link {
     margin-top: 1rem;
     margin-bottom: 1rem;
     padding: 0.375rem 0.75rem;
@@ -83,6 +86,15 @@
 
     &:hover {
       background-color: var(--color-surface-3);
+    }
+
+    &.demo {
+      color: #fff;
+      background-color: var(--color-primary);
+
+      &:hover {
+        background-color: var(--color-primary--active);
+      }
     }
   }
 
