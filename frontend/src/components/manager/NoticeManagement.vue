@@ -13,11 +13,12 @@
       :loading="loading"
       :rowClass="rowClass"
       responsiveLayout="scroll"
-      :emptyMessage="'暂无通知数据'"
       :removableSort="true"
       :sortMode="'multiple'"
-      style="min-height: 300px"
     >
+      <template #empty>
+        <div class="text-center">暂无通知数据</div>
+      </template>
       <Column field="id" header="ID" sortable style="width: 5%"></Column>
       <Column field="title" header="标题" sortable style="width: 25%"></Column>
       <Column field="content" header="内容" style="width: 40%">

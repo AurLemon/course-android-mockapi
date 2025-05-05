@@ -18,11 +18,12 @@
       :loading="loading"
       :rowClass="rowClass"
       responsiveLayout="scroll"
-      :emptyMessage="'暂无用户数据'"
       :removableSort="true"
       :sortMode="'multiple'"
-      style="min-height: 300px"
     >
+      <template #empty>
+        <div class="text-center">暂无用户数据</div>
+      </template>
       <Column field="uid" header="ID" sortable style="width: 5%"></Column>
       <Column
         field="username"

@@ -15,9 +15,10 @@
 </template>
 
 <script setup lang="ts">
-import { RouterLink, RouterView } from 'vue-router'
+import { $dt } from '@primeuix/themes'
+import { RouterLink, RouterView, useRoute } from 'vue-router'
+
 import PageHeader from './components/layouts/PageHeader.vue'
-import { useRoute } from 'vue-router'
 
 const route = useRoute()
 </script>

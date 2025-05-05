@@ -68,12 +68,16 @@ const logout = async () => {
 </script>
 
 <style lang="scss">
-:deep(.p-datatable) {
+.p-datatable {
   border-radius: 8px;
   overflow: hidden;
 }
 
-:deep(.p-datatable-paginator-bottom) {
+.p-datatable-paginator-bottom {
   border-color: transparent;
+}
+
+.p-datatable-empty-message {
+  height: 100px;
 }
 </style>
