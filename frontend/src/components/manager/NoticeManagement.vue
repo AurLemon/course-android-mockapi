@@ -11,7 +11,6 @@
       :rows="15"
       class="p-datatable-sm rounded-lg"
       :loading="loading"
-      :rowClass="rowClass"
       responsiveLayout="scroll"
       :removableSort="true"
       :sortMode="'multiple'"
@@ -165,13 +164,6 @@ const formatDate = (dateStr: string) => {
     hour: '2-digit',
     minute: '2-digit',
   }).format(date)
-}
-
-const rowClass = (data) => {
-  return {
-    'bg-blue-50': data.id % 2 === 0,
-    'bg-gray-50': data.id % 2 !== 0,
-  }
 }
 
 onMounted(async () => {

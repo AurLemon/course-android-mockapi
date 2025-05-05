@@ -16,7 +16,6 @@
       :rows="15"
       class="p-datatable-sm rounded-lg"
       :loading="loading"
-      :rowClass="rowClass"
       responsiveLayout="scroll"
       :removableSort="true"
       :sortMode="'multiple'"
@@ -434,16 +433,6 @@ const saveAlbum = async () => {
     })
   } finally {
     saving.value = false
-  }
-}
-
-const rowClass = (data) => {
-  return {
-    'bg-blue-50': data.type === 1,
-    'bg-purple-50': data.type === 2,
-    'bg-amber-50': data.type === 3,
-    'bg-emerald-50': data.type === 4,
-    'bg-gray-50': !data.type,
   }
 }
 

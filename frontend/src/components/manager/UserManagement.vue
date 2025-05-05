@@ -16,7 +16,6 @@
       :rows="15"
       class="p-datatable-sm rounded-lg"
       :loading="loading"
-      :rowClass="rowClass"
       responsiveLayout="scroll"
       :removableSort="true"
       :sortMode="'multiple'"
@@ -276,13 +275,6 @@ const openAddUserDialog = () => {
   birthDate.value = null
   editMode.value = false
   userDialog.value = true
-}
-
-const rowClass = (data) => {
-  return {
-    'bg-red-50': data.role === 0,
-    'bg-green-50': data.role === 1,
-  }
 }
 
 const editUser = (userData: User) => {
