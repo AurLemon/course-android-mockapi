@@ -4,7 +4,7 @@ import MobileDemo from '../components/demo/MobileDemo.vue'
 
 <template>
   <div class="page-demo overflow-y-auto">
-    <div class="demo-container overflow-hidden rounded-lg shadow">
+    <div class="demo-container overflow-hidden rounded-lg shadow-lg border border-[var(--border-color-base--darker)]">
       <MobileDemo />
     </div>
   </div>
