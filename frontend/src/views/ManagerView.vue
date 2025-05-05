@@ -42,7 +42,11 @@
 
     <div class="flex-grow p-6 flex flex-col overflow-y-auto">
       <main class="flex-grow">
-        <router-view></router-view>
+        <router-view v-slot="{ Component }">
+          <transition name="fade" mode="out-in">
+            <component :is="Component" class="flex flex-col flex-1" />
+          </transition>
+        </router-view>
       </main>
       <footer class="w-full text-center mt-2">
         <span>
@@ -90,5 +94,17 @@ const logout = async () => {
 
 .p-datatable-empty-message {
   height: 100px;
+}
+</style>
+
+<style lang="scss" scoped>
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.2s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
 }
 </style>

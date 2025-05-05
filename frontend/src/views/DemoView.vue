@@ -7,6 +7,7 @@ import MobileDemo from '../components/demo/MobileDemo.vue'
     <div class="demo-container overflow-hidden rounded-lg shadow-lg border border-[var(--border-color-base--darker)]">
       <MobileDemo />
     </div>
+    <div class="demo-tips text-sm text-[var(--color-text--weaken)] mt-2">此 Demo APP 使用 Claude AI 生成，可能存在问题。</div>
   </div>
 </template>
 
@@ -26,14 +27,22 @@ import MobileDemo from '../components/demo/MobileDemo.vue'
 </style>
 
 <style lang="scss" scoped>
+@use '@/assets/styles/media_screen.scss' as media;
+
 .page-demo {
   display: flex;
   justify-content: center;
   align-items: center;
+  padding: 1rem;
 
   .demo-container {
     width: 400px;
     height: 850px;
+
+    @include media.media-screen(phone) {
+      width: 100%;
+    }
   }
+
 }
 </style>

@@ -9,14 +9,17 @@
     <div class="corner bl" v-if="route.path === '/'"></div>
     <PageHeader />
     <div class="page-container flex flex-col flex-1 overflow-hidden">
-      <router-view class="flex flex-col flex-1" />
+      <router-view v-slot="{ Component }">
+        <transition name="fade" mode="out-in">
+          <component :is="Component" class="flex flex-col flex-1" />
+        </transition>
+      </router-view>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { $dt } from '@primeuix/themes'
-import { RouterLink, RouterView, useRoute } from 'vue-router'
+import { RouterView, useRoute } from 'vue-router'
 
 import PageHeader from './components/layouts/PageHeader.vue'
 
@@ -24,6 +27,17 @@ const route = useRoute()
 </script>
 
 <style lang="scss" scoped>
+@use '@/assets/styles/media_screen.scss' as media;
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.2s ease;
+}
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+
 .page-wrapper {
   @keyframes cornerFade {
     0% {
@@ -113,6 +127,16 @@ const route = useRoute()
         rgba(255, 255, 255, 0.4) 40%,
         transparent 70%
       );
+    }
+  }
+
+  @include media.media-screen(phone) {
+    min-height: 100vh;
+    overflow: auto !important;
+
+    .page-container {
+      height: 100%;
+      overflow: auto;
     }
   }
 }

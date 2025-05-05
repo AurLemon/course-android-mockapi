@@ -23,7 +23,7 @@
           </p>
         </div>
         <div class="links flex gap-2">
-          <a href="/docs" class="block see-link docs">查看文档</a>
+          <a href="/docs" class="block see-link docs" target="_blank">查看文档</a>
           <RouterLink to="/demo" class="block see-link demo">查看演示</RouterLink>
         </div>
       </main>

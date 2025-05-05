@@ -15,9 +15,7 @@
       <RouterLink to="/demo" class="page-header-link" :active-class="'active'"
         >演示</RouterLink
       >
-      <RouterLink to="/docs" class="page-header-link" :active-class="'active'"
-        >文档</RouterLink
-      >
+      <a href="/docs" target="_blank" class="page-header-link">文档</a>
     </div>
     <div class="page-header-repo flex justify-end">
       <a
@@ -32,6 +30,8 @@
 </template>
 
 <style lang="scss" scoped>
+@use '@/assets/styles/media_screen.scss' as media;
+
 .page-header {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -48,10 +48,20 @@
   border-bottom: 1px solid var(--border-color-base);
   backdrop-filter: blur(12px);
 
+  @include media.media-screen(phone) {
+    grid-template-rows: repeat(3, 1fr);
+    grid-template-columns: repeat(1, 1fr);
+  }
+
   .page-header-router {
     display: flex;
     justify-content: center;
     gap: 1.25rem;
+
+    @include media.media-screen(phone) {
+      margin-top: 12px;
+      grid-row: 3;
+    }
 
     .page-header-link {
       color: var(--color-text--subtle);
@@ -99,6 +109,21 @@
           }
         }
       }
+    }
+  }
+
+  .page-header-text {
+    @include media.media-screen(phone) {
+      grid-row: 2;
+      text-align: center;
+      line-height: 1;
+    }
+  }
+
+  .page-header-repo {
+    @include media.media-screen(phone) {
+      grid-row: 1;
+      justify-content: center;
     }
   }
 }
