@@ -11,7 +11,9 @@
         >
           <div class="logo">
             <div class="main">
-              <img src="@/assets/icons/site/main.gif" />
+              <div class="img-wrapper">
+                <img src="@/assets/icons/site/main.gif" />
+              </div>
             </div>
           </div>
 
@@ -23,8 +25,12 @@
           </p>
         </div>
         <div class="links flex gap-2">
-          <a href="/docs" class="block see-link docs" target="_blank">查看文档</a>
-          <RouterLink to="/demo" class="block see-link demo">查看演示</RouterLink>
+          <a href="/docs" class="block see-link docs" target="_blank"
+            >查看文档</a
+          >
+          <RouterLink to="/demo" class="block see-link demo"
+            >查看演示</RouterLink
+          >
         </div>
       </main>
     </div>
@@ -60,13 +66,46 @@
     margin-bottom: 2rem;
 
     .main {
-      img {
-        display: block;
-        width: 12rem;
-        height: 12rem;
-        object-fit: cover;
+      .img-wrapper {
+        position: relative;
+        display: inline-block;
+        padding: 10px;
         border-radius: 50%;
-        filter: drop-shadow(0 4px 8px var(--background-dark-0));
+        transition: 400ms;
+
+        &::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          border-radius: 32px;
+          background: var(--border-color-base);
+          transform: scale(0);
+          transition: 500ms;
+          z-index: 0;
+        }
+
+        &:hover{
+          filter: drop-shadow(-4px 8px 16px #ffe02e96);
+          
+          &::before {
+            transform: scale(1);
+          }
+        }
+
+        img {
+          display: block;
+          width: 12rem;
+          height: 12rem;
+          object-fit: cover;
+          border-radius: 32px;
+          filter: drop-shadow(0 4px 8px var(--background-dark-0));
+          user-select: none;
+          z-index: 1;
+          position: relative;
+        }
       }
     }
   }
