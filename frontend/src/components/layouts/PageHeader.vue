@@ -58,14 +58,46 @@
       font-size: 0.9375rem;
       text-decoration: none;
       user-select: none;
+      position: relative;
+      transition: 300ms;
 
-      &.active {
-        color: var(--color-primary);
-        font-weight: 600;
+      &::before {
+        content: '';
+        position: absolute;
+        top: calc(100% + 2px);
+        left: 50%;
+        transform: translate(-50%, 8px) scale(0.4);
+        opacity: 0;
+        width: 95%;
+        height: 3px;
+        border-radius: 4px;
+        background: var(--color-primary);
+        transition: 400ms;
       }
 
       &:hover {
         color: var(--color-primary);
+
+        &::before {
+          transform: translate(-50%, 1px) scale(0.6);
+          opacity: 0.5;
+        }
+      }
+
+      &.active {
+        color: var(--color-primary);
+        font-weight: 600;
+
+        &::before {
+          transform: translate(-50%, 0);
+          opacity: 1;
+        }
+
+        &:hover {
+          &::before {
+            opacity: 0.7;
+          }
+        }
       }
     }
   }
