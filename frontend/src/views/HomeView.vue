@@ -1,9 +1,8 @@
 <template>
-  <div
-    class="page-home h-full p-10 justify-center items-center"
-  >
-
-    <div class="main flex flex-col justify-between items-center p-4 pb-15">
+  <div class="page-home h-full p-4 px-8 justify-between items-center">
+    <div
+      class="main flex flex-col justify-between items-center p-4 pb-15 m-auto"
+    >
       <main
         class="flex-grow flex flex-col justify-center items-center text-center"
       >
@@ -27,7 +26,7 @@
       </main>
     </div>
 
-    <footer class="w-full text-center py-4">
+    <footer class="w-full text-center">
       <div class="secondary-content flex flex-col justify-center items-center">
         <div class="project-stack">
           <img src="@/assets/icons/symbols/nestjs.svg" />

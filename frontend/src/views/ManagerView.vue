@@ -34,14 +34,25 @@
 
       <button
         @click="logout"
-        class="logout text-white p-1 w-full bg-red-500 hover:bg-red-600 rounded-lg transition-colors"
+        class="logout text-sm text-white p-1 w-full bg-red-500 hover:bg-red-600 rounded-lg transition-colors shadow cursor-pointer"
       >
         退出登录
       </button>
     </div>
 
-    <div class="flex-grow p-6 overflow-y-auto">
-      <router-view></router-view>
+    <div class="flex-grow p-6 flex flex-col overflow-y-auto">
+      <main class="flex-grow">
+        <router-view></router-view>
+      </main>
+      <footer class="w-full text-center mt-2">
+        <span>
+          <a
+            class="text-sm !text-[var(--color-text--weaken)]"
+            href="https://beian.miit.gov.cn/"
+            >闽ICP备2023007345号-3</a
+          >
+        </span>
+      </footer>
     </div>
   </div>
 </template>
