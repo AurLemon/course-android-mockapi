@@ -1137,9 +1137,9 @@ const login = async () => {
         password: loginForm.password,
       }),
     })
-
-    auth.token = response.data.access_token
-    auth.refreshToken = response.data.refresh_token
+    
+    auth.token = response.token
+    auth.refreshToken = ''
     isLoggedIn.value = true
 
     await fetchUserInfo()
@@ -1198,53 +1198,12 @@ const logout = async () => {
 }
 
 const refreshToken = async () => {
-  if (!auth.refreshToken) {
-    toast.add({
-      severity: 'error',
-      summary: '刷新失败',
-      detail: '没有有效的刷新令牌',
-      life: 3000,
-    })
-    return
-  }
-
-  try {
-    refreshingToken.value = true
-
-    const response = await fetchApi('/auth/refresh', {
-      method: 'POST',
-      body: JSON.stringify({
-        refresh_token: auth.refreshToken,
-      }),
-    })
-
-    auth.token = response.data.access_token
-    auth.refreshToken = response.data.refresh_token
-
-    toast.add({
-      severity: 'success',
-      summary: '刷新成功',
-      detail: '访问令牌已更新',
-      life: 3000,
-    })
-  } catch (error) {
-    console.error('刷新令牌失败:', error)
-
-    if (error.message.includes('无效') || error.message.includes('过期')) {
-      isLoggedIn.value = false
-      auth.token = ''
-      auth.refreshToken = ''
-
-      toast.add({
-        severity: 'warn',
-        summary: '会话过期',
-        detail: '请重新登录',
-        life: 3000,
-      })
-    }
-  } finally {
-    refreshingToken.value = false
-  }
+  toast.add({
+    severity: 'info',
+    summary: '提示',
+    detail: '此应用不支持令牌刷新功能',
+    life: 3000,
+  })
 }
 
 const fetchUserInfo = async () => {
@@ -1666,12 +1625,9 @@ onMounted(async () => {
     await fetchAlbums()
 
     const savedToken = localStorage.getItem('auth_token')
-    const savedRefreshToken = localStorage.getItem('refresh_token')
 
-    if (savedToken && savedRefreshToken) {
+    if (savedToken) {
       auth.token = savedToken
-      auth.refreshToken = savedRefreshToken
-
       try {
         await fetchUserInfo()
         isLoggedIn.value = true
@@ -1681,7 +1637,6 @@ onMounted(async () => {
         }
       } catch (error) {
         localStorage.removeItem('auth_token')
-        localStorage.removeItem('refresh_token')
       }
     }
   } catch (error) {

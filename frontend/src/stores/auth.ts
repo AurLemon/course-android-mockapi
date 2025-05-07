@@ -5,12 +5,18 @@ import axios from 'axios'
 interface User {
   uid: number
   username: string
+  trueName: string
+  sex: string
+  telephone: string
+  birth: string
+  dept: string
   role: number
+  balance: number
 }
 
 export const useAuthStore = defineStore('auth', () => {
   const token = ref<string | null>(localStorage.getItem('token'))
-  const refreshToken = ref<string | null>(localStorage.getItem('refreshToken'))
+
   const user = ref<User | null>(null)
 
   const isLoggedIn = computed(() => !!token.value)
@@ -23,26 +29,33 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
+  const fetchUserInfo = async () => {
+    try {
+      const response = await axios.get('/api/users/info')
+      user.value = response.data.data
+      localStorage.setItem('user', JSON.stringify(user.value))
+      return true
+    } catch (error) {
+      console.error('Failed to fetch user info:', error)
+      return false
+    }
+  }
+
   const login = async (username: string, password: string) => {
     try {
       const response = await axios.post('/api/auth/login', {
         username,
         password,
       })
-      const data = response.data.data
 
-      token.value = data.access_token
-      refreshToken.value = data.refresh_token
-      user.value = data.user
+      token.value = response.data.token
+      localStorage.setItem('token', token.value)
 
-      localStorage.setItem('token', data.access_token)
-      localStorage.setItem('refreshToken', data.refresh_token)
-      localStorage.setItem('user', JSON.stringify(data.user))
+      axios.defaults.headers.common['Authorization'] = `Bearer ${token.value}`
 
-      axios.defaults.headers.common['Authorization'] =
-        `Bearer ${data.access_token}`
+      const success = await fetchUserInfo()
 
-      return true
+      return success
     } catch (error) {
       console.error('Login failed:', error)
       return false
@@ -56,11 +69,9 @@ export const useAuthStore = defineStore('auth', () => {
       console.error('Logout error:', error)
     } finally {
       token.value = null
-      refreshToken.value = null
       user.value = null
 
       localStorage.removeItem('token')
-      localStorage.removeItem('refreshToken')
       localStorage.removeItem('user')
 
       delete axios.defaults.headers.common['Authorization']
@@ -79,5 +90,6 @@ export const useAuthStore = defineStore('auth', () => {
     isAdmin,
     login,
     logout,
+    fetchUserInfo,
   }
 })

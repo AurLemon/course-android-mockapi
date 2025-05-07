@@ -38,8 +38,16 @@
       ></Column>
       <Column field="sex" header="性别" style="width: 5%"></Column>
       <Column field="telephone" header="电话" style="width: 15%"></Column>
-      <Column field="birth" header="出生日期" style="width: 15%"></Column>
-      <Column field="dept" header="专业班级" style="width: 15%"></Column>
+      <Column field="birth" header="出生日期" style="width: 10%"></Column>
+      <Column field="dept" header="专业班级" style="width: 10%"></Column>
+      <Column field="regtime" header="注册时间" style="width: 15%">
+        <template #body="slotProps">
+          {{ formatDateTime(slotProps.data.regtime) }}
+        </template>
+      </Column>
+      <Column field="balance" header="余额" style="width: 5%">
+        <template #body="slotProps"> {{ slotProps.data.balance }} 元 </template>
+      </Column>
       <Column field="role" header="角色" style="width: 10%">
         <template #body="slotProps">
           <Badge
@@ -184,6 +192,12 @@ import { ref, onMounted, computed } from 'vue'
 import { useConfirm } from 'primevue/useconfirm'
 import { useToast } from 'primevue/usetoast'
 import axios from 'axios'
+import dayjs from 'dayjs'
+import utc from 'dayjs/plugin/utc'
+import timezone from 'dayjs/plugin/timezone'
+
+dayjs.extend(utc)
+dayjs.extend(timezone)
 
 import Button from 'primevue/button'
 import DataTable from 'primevue/datatable'
@@ -206,6 +220,8 @@ interface User {
   birth?: string
   dept?: string
   role: number
+  regtime?: string
+  balance?: number
 }
 
 const confirm = useConfirm()
@@ -227,6 +243,11 @@ const saving = ref(false)
 const userDialog = ref(false)
 const editMode = ref(false)
 const birthDate = ref<Date | null>(null)
+
+const formatDateTime = (datetime: string) => {
+  if (!datetime) return ''
+  return dayjs(datetime).tz('Asia/Shanghai').format('YYYY-MM-DD HH:mm:ss')
+}
 
 const birthDateFormatted = computed(() => {
   if (!birthDate.value) return ''
