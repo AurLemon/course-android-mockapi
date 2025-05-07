@@ -22,6 +22,22 @@ export const useAuthStore = defineStore('auth', () => {
   const isLoggedIn = computed(() => !!token.value)
   const isAdmin = computed(() => user.value?.role === 0)
 
+  axios.interceptors.response.use(
+    (response) => response,
+    (error) => {
+      if (error.response && error.response.status === 401) {
+        logout()
+
+        if (window.location.pathname !== '/manager/login') {
+          window.location.href = '/manager/login'
+        }
+      }
+      return Promise.reject(
+        error instanceof Error ? error : new Error(String(error)),
+      )
+    },
+  )
+
   const loadUserFromStorage = () => {
     const userStr = localStorage.getItem('user')
     if (userStr) {
