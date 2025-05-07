@@ -39,7 +39,6 @@ export class HttpExceptionFilter implements ExceptionFilter {
 
         response.status(400).json({
           code: 400,
-          timestamp: Date.now(),
           msg: message,
           data: null,
         });
@@ -55,7 +54,6 @@ export class HttpExceptionFilter implements ExceptionFilter {
 
       const errorResponse = {
         code: status,
-        timestamp: Date.now(),
         msg:
           typeof exceptionResponse === 'object'
             ? (exceptionResponse as any).message || exception.message
@@ -70,7 +68,6 @@ export class HttpExceptionFilter implements ExceptionFilter {
     // 处理其他未知异常
     response.status(500).json({
       code: 500,
-      timestamp: Date.now(),
       msg: '服务器内部错误',
       data: null,
     });

@@ -4,7 +4,11 @@ import {
   ConflictException,
 } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
-import { CreateUserDto, UpdateUserDto } from './dto/user.dto';
+import {
+  CreateUserDto,
+  UpdateUserDto,
+  UpdateUserSelfDto,
+} from './dto/user.dto';
 import { User } from '@prisma/client';
 
 // 定义用户列表返回类型
@@ -18,6 +22,7 @@ type UserListItem = {
   dept: string | null;
   role: number;
   regtime: Date;
+  balance: number;
 };
 
 // 定义用户信息返回类型
@@ -30,6 +35,7 @@ type UserInfo = {
   birth: string | null;
   dept: string | null;
   role: number;
+  balance: number;
 };
 
 @Injectable()
@@ -49,6 +55,7 @@ export class UsersService {
         dept: true,
         role: true,
         regtime: true,
+        balance: true,
       },
     });
   }
@@ -66,6 +73,7 @@ export class UsersService {
         birth: true,
         dept: true,
         role: true,
+        balance: true,
       },
     });
 
@@ -110,7 +118,10 @@ export class UsersService {
   }
 
   // 更新用户信息
-  async update(uid: number, updateUserDto: UpdateUserDto): Promise<User> {
+  async update(
+    uid: number,
+    updateUserDto: UpdateUserDto | UpdateUserSelfDto,
+  ): Promise<User> {
     // 检查用户是否存在
     const user = await this.prisma.user.findUnique({
       where: { uid },

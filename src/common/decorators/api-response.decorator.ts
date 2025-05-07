@@ -111,9 +111,36 @@ export function ApiSuccessResponse(
       schema: {
         properties: {
           code: { type: 'number', example: 200 },
-          msg: { type: 'string', example: 'success' },
-          timestamp: { type: 'number', example: Date.now() },
+          msg: { type: 'string', example: '查询成功' },
           data: createDataSchema(data, isArray),
+        },
+      },
+    }),
+  );
+}
+
+/**
+ * 创建自定义字段响应装饰器 - 可以指定任意字段名替代data
+ * @param fieldName - 自定义字段名
+ * @param fieldSchema - 字段Schema定义
+ * @param options - 配置选项
+ */
+export function ApiCustomFieldResponse(
+  fieldName: string,
+  fieldSchema: SchemaObject,
+  options: ApiResponseOptions = {},
+) {
+  const { description = '操作成功' } = options;
+
+  return applyDecorators(
+    ApiResponse({
+      status: 200,
+      description,
+      schema: {
+        properties: {
+          code: { type: 'number', example: 200 },
+          msg: { type: 'string', example: '查询成功' },
+          [fieldName]: fieldSchema,
         },
       },
     }),

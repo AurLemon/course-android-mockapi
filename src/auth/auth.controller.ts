@@ -8,6 +8,7 @@ import {
   Req,
   Put,
   BadRequestException,
+  UseInterceptors,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -22,9 +23,11 @@ import {
   RefreshTokenDto,
   ChangePasswordDto,
 } from './dto/auth.dto';
-import { ApiSuccessResponse } from '../common/decorators/api-response.decorator';
+import { ApiCustomFieldResponse } from '../common/decorators/api-response.decorator';
 import { AuthService } from './auth.service';
 import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
+import { ConfigurableResponseInterceptor } from '../common/interceptors/response.interceptor';
+import { SkipGlobalInterceptor } from 'src/common/decorators/skip-global-interceptor.decorator';
 
 @ApiTags('认证服务')
 @Controller('auth')
@@ -34,8 +37,14 @@ export class AuthController {
   // 登录
   @Post('login')
   @ApiOperation({ summary: '用户登录' })
-  @ApiSuccessResponse(LoginResponseDto)
+  @ApiCustomFieldResponse('token', {
+    type: 'string',
+    example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
+    description: '访问令牌',
+  })
   @ApiResponse({ status: 401, description: '用户名或密码错误' })
+  @SkipGlobalInterceptor()
+  @UseInterceptors(new ConfigurableResponseInterceptor('token'))
   async login(@Body() loginDto: LoginDto) {
     try {
       const user = await this.authService.validateUser(
@@ -61,17 +70,17 @@ export class AuthController {
   }
 
   // 通过刷新令牌获取新访问令牌
-  @Post('refresh')
-  @ApiOperation({ summary: '刷新令牌' })
-  @ApiResponse({ status: 200, description: '刷新成功' })
-  @ApiResponse({ status: 401, description: '刷新令牌无效或已过期' })
-  async refreshToken(@Body() refreshDto: RefreshTokenDto) {
-    try {
-      return await this.authService.refreshToken(refreshDto.refresh_token);
-    } catch (error) {
-      throw new UnauthorizedException(error.message);
-    }
-  }
+  // @Post('refresh')
+  // @ApiOperation({ summary: '刷新令牌' })
+  // @ApiResponse({ status: 200, description: '刷新成功' })
+  // @ApiResponse({ status: 401, description: '刷新令牌无效或已过期' })
+  // async refreshToken(@Body() refreshDto: RefreshTokenDto) {
+  //   try {
+  //     return await this.authService.refreshToken(refreshDto.refresh_token);
+  //   } catch (error) {
+  //     throw new UnauthorizedException(error.message);
+  //   }
+  // }
 
   // 修改密码
   @Put('modify/password')

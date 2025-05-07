@@ -24,6 +24,7 @@ import { UsersService } from './users.service';
 import {
   CreateUserDto,
   UpdateUserDto,
+  UpdateUserSelfDto,
   UserListResponseDto,
   UserInfoResponseDto,
   ModifyTrueNameDto,
@@ -86,58 +87,19 @@ export class UsersController {
     return this.usersService.update(uid, updateUserDto);
   }
 
-  @Put('modify/truename')
+  @Put('modify')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  @ApiOperation({ summary: '修改个人姓名' })
+  @ApiOperation({
+    summary:
+      '修改个人信息（真实姓名、电话、生日、性别，四个键可以只传两个，传几个改几个）',
+  })
   @ApiSuccessResponse({ success: true }, { description: '修改成功' })
-  async updateName(
+  async updateUserInfo(
     @Request() req,
-    @Body() modifyTrueNameDto: ModifyTrueNameDto,
+    @Body() updateUserSelfDto: UpdateUserSelfDto,
   ) {
-    await this.usersService.update(req.user.userId, {
-      trueName: modifyTrueNameDto.trueName,
-    });
-    return { success: true };
-  }
-
-  @Put('modify/phone')
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth()
-  @ApiOperation({ summary: '修改个人手机号' })
-  @ApiSuccessResponse({ success: true }, { description: '修改成功' })
-  async updatePhone(
-    @Request() req,
-    @Body() modifyTelephoneDto: ModifyTelephoneDto,
-  ) {
-    await this.usersService.update(req.user.userId, {
-      telephone: modifyTelephoneDto.telephone,
-    });
-    return { success: true };
-  }
-
-  @Put('modify/birthdate')
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth()
-  @ApiOperation({ summary: '修改个人出生日期' })
-  @ApiSuccessResponse({ success: true }, { description: '修改成功' })
-  async updateBirth(
-    @Request() req,
-    @Body() modifyBirthdateDto: ModifyBirthdateDto,
-  ) {
-    await this.usersService.update(req.user.userId, {
-      birth: modifyBirthdateDto.birth,
-    });
-    return { success: true };
-  }
-
-  @Put('modify/sex')
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth()
-  @ApiOperation({ summary: '修改个人性别' })
-  @ApiSuccessResponse({ success: true }, { description: '修改成功' })
-  async updateSex(@Request() req, @Body() modifySexDto: ModifySexDto) {
-    await this.usersService.update(req.user.userId, { sex: modifySexDto.sex });
+    await this.usersService.update(req.user.userId, updateUserSelfDto);
     return { success: true };
   }
 

@@ -48,7 +48,7 @@ export class CreateUserDto {
   birth?: string;
 
   @ApiProperty({
-    example: '24计应(3+2)1',
+    example: '24计算机应用技术(3+2)1',
     description: '专业班级',
     required: false,
   })
@@ -67,6 +67,10 @@ export class CreateUserDto {
 }
 
 export class UpdateUserDto {
+  @ApiProperty({ example: 1, description: 'UID', required: true })
+  @IsInt()
+  uid: number;
+
   @ApiProperty({ example: '林檬', description: '真实姓名', required: false })
   @IsOptional()
   @IsString()
@@ -95,13 +99,42 @@ export class UpdateUserDto {
   birth?: string;
 
   @ApiProperty({
-    example: '24计应(3+2)1',
+    example: '24计算机应用技术(3+2)1',
     description: '专业班级',
     required: false,
   })
   @IsOptional()
   @IsString()
   dept?: string;
+}
+
+export class UpdateUserSelfDto {
+  @ApiProperty({ example: '林檬', description: '真实姓名', required: false })
+  @IsOptional()
+  @IsString()
+  @MaxLength(10)
+  trueName?: string;
+
+  @ApiProperty({ example: '男', description: '性别', required: false })
+  @IsOptional()
+  @IsString()
+  @MaxLength(2)
+  sex?: string;
+
+  @ApiProperty({ example: '13300000000', description: '电话', required: false })
+  @IsOptional()
+  @IsString()
+  @MaxLength(13)
+  telephone?: string;
+
+  @ApiProperty({
+    example: '2006-05-18',
+    description: '出生日期',
+    required: false,
+  })
+  @IsOptional()
+  @IsString()
+  birth?: string;
 }
 
 export class UserListResponseDto {
@@ -123,7 +156,7 @@ export class UserListResponseDto {
   @ApiProperty({ example: '2006-05-18' })
   birth: string;
 
-  @ApiProperty({ example: '24计应(3+2)1' })
+  @ApiProperty({ example: '24计算机应用技术(3+2)1' })
   dept: string;
 
   @ApiProperty({ example: 1 })
@@ -131,6 +164,9 @@ export class UserListResponseDto {
 
   @ApiProperty({ example: '2025-05-03T08:30:00Z' })
   regtime: Date;
+
+  @ApiProperty({ example: 0 })
+  balance: number;
 }
 
 export class UserInfoResponseDto {
@@ -152,11 +188,14 @@ export class UserInfoResponseDto {
   @ApiProperty({ example: '2006-05-18' })
   birth: string;
 
-  @ApiProperty({ example: '24计应(3+2)1' })
+  @ApiProperty({ example: '24计算机应用技术(3+2)1' })
   dept: string;
 
   @ApiProperty({ example: 1 })
   role: number;
+
+  @ApiProperty({ example: 0 })
+  balance: number;
 }
 
 export class ModifyTrueNameDto {

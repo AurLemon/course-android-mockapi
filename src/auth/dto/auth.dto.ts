@@ -26,27 +26,7 @@ export class LoginResponseDto {
     example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
     description: '访问令牌',
   })
-  access_token: string;
-
-  @ApiProperty({
-    example: '550e8400-e29b-41d4-a716-446655440000',
-    description: '刷新令牌',
-  })
-  refresh_token: string;
-
-  @ApiProperty({
-    example: {
-      uid: 1,
-      username: 'admin',
-      role: 0,
-    },
-    description: '用户基本信息',
-  })
-  user: {
-    uid: number;
-    username: string;
-    role: number;
-  };
+  token: string;
 }
 
 export class RefreshTokenDto {

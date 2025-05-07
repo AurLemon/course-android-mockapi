@@ -61,16 +61,7 @@ export class AuthService {
           data: { lastUsed: now },
         });
 
-        return {
-          access_token: existingToken.token,
-          refresh_token: existingToken.refreshToken,
-          user: {
-            uid: user.uid,
-            username: user.username,
-            role: user.role,
-            trueName: user.trueName,
-          },
-        };
+        return existingToken.token;
       }
 
       /**
@@ -103,16 +94,7 @@ export class AuthService {
           },
         });
 
-        return {
-          access_token: newToken,
-          refresh_token: existingToken.refreshToken,
-          user: {
-            uid: user.uid,
-            username: user.username,
-            role: user.role,
-            trueName: user.trueName,
-          },
-        };
+        return newToken;
       }
 
       /**
@@ -160,16 +142,7 @@ export class AuthService {
         });
       }
 
-      return {
-        access_token: token,
-        refresh_token: refreshToken,
-        user: {
-          uid: user.uid,
-          username: user.username,
-          role: user.role,
-          trueName: user.trueName,
-        },
-      };
+      return token;
     } catch (error) {
       if (error.code === 'P2002') {
         await new Promise((resolve) => setTimeout(resolve, 100));
