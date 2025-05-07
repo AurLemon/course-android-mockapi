@@ -3,6 +3,7 @@
 /dist
 /node_modules
 /build
+/migrate/*.xlsx
 
 # Logs
 logs
