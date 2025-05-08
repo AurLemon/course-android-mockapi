@@ -21,7 +21,9 @@
     "db:push": "prisma db push",
     "db:migrate": "prisma migrate dev",
     "db:generate": "prisma generate",
-    "db:seed": "ts-node prisma/seed.ts"
+    "db:seed": "ts-node prisma/seed.ts",
+    "frontend:build": "cd frontend && pnpm run build",
+    "frontend:dev": "cd frontend && pnpm run dev"
   },
   "dependencies": {
     "@nestjs/common": "^11.1.0",
