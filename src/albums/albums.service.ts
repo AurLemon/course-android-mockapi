@@ -11,6 +11,23 @@ import { log } from 'node:console';
 export class AlbumsService {
   constructor(private prisma: PrismaService) {}
 
+  // 辅助方法：安全转换相册对象，处理BigInt
+  private safeAlbumConversion(album) {
+    if (!album) return null;
+
+    return {
+      ...album,
+      id: typeof album.id === 'bigint' ? album.id.toString() : album.id,
+      typeName: album.albumType?.name || '未分类',
+      albumType: undefined,
+    };
+  }
+
+  // 批量转换相册列表
+  private safeAlbumsConversion(albums) {
+    return albums.map((album) => this.safeAlbumConversion(album));
+  }
+
   // 获取所有相册
   async findAll() {
     try {
@@ -42,23 +59,7 @@ export class AlbumsService {
         },
       });
 
-      const result = albums.map((album) => {
-        const safeAlbum = {
-          id: typeof album.id === 'bigint' ? album.id.toString() : album.id,
-          title: album.title || '',
-          coverPath: album.coverPath || '',
-          describe: album.describe || '',
-          type: album.type || 0,
-          typeName: album.albumType?.name || '未分类',
-          loopPicPath: album.loopPicPath || '',
-          createTime: album.createTime ? album.createTime.toISOString() : null,
-          updateTime: album.updateTime ? album.updateTime.toISOString() : null,
-        };
-
-        return safeAlbum;
-      });
-
-      return result;
+      return this.safeAlbumsConversion(albums);
     } catch (error) {
       console.error('查询相册列表失败:', error);
       throw new Error('获取相册列表时发生错误');
@@ -83,11 +84,7 @@ export class AlbumsService {
       },
     });
 
-    return albums.map((album) => ({
-      ...album,
-      typeName: album.albumType?.name || '未分类',
-      albumType: undefined,
-    }));
+    return this.safeAlbumsConversion(albums);
   }
 
   // 获取相册详情
@@ -107,16 +104,16 @@ export class AlbumsService {
       throw new NotFoundException(`相册ID ${id} 不存在`);
     }
 
-    return {
-      ...album,
-      typeName: album.albumType?.name || '未分类',
-      albumType: undefined,
-    };
+    return this.safeAlbumConversion(album);
   }
 
   // 获取所有相册类型
   async findAllTypes() {
-    return this.prisma.albumType.findMany();
+    const types = await this.prisma.albumType.findMany();
+    return types.map((type) => ({
+      ...type,
+      id: typeof type.id === 'bigint' ? String(type.id) : type.id,
+    }));
   }
 
   // 创建相册
@@ -154,11 +151,7 @@ export class AlbumsService {
       },
     });
 
-    return {
-      ...album,
-      typeName: album.albumType?.name || '未分类',
-      albumType: undefined,
-    };
+    return this.safeAlbumConversion(album);
   }
 
   // 更新相册
@@ -201,11 +194,7 @@ export class AlbumsService {
       },
     });
 
-    return {
-      ...updatedAlbum,
-      typeName: updatedAlbum.albumType?.name || '未分类',
-      albumType: undefined,
-    };
+    return this.safeAlbumConversion(updatedAlbum);
   }
 
   // 删除相册
