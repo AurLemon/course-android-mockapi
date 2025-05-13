@@ -128,7 +128,7 @@ export class CosService {
   // 复制/重命名文件
   async copyFile(sourceKey: string, destKey: string): Promise<any> {
     return new Promise((resolve, reject) => {
-      this.cos.copyObject(
+      this.cos.putObjectCopy(
         {
           Bucket: this.bucket,
           Region: this.region,

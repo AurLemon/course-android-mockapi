@@ -153,6 +153,7 @@ export class UploadController {
       const dirPrefix = dirname === '.' ? '' : `${dirname}/`;
       const newKey = `${dirPrefix}${newFilenameWithExt}`;
 
+      // 直接使用COS SDK的putObjectCopy方法而不是copyObject
       const copyResult = await this.cosService.copyFile(normalizedPath, newKey);
       await this.cosService.deleteFile(normalizedPath);
 
@@ -162,25 +163,23 @@ export class UploadController {
     }
   }
 
-  // 修改删除方法
-  @Delete('*')
+  @Delete('*filePath')
   @UseGuards(RolesGuard)
   @Roles(0)
   @ApiBearerAuth()
   @ApiOperation({ summary: '删除文件 (管理员)' })
   @ApiSuccessResponse({ success: true }, { description: '文件删除成功' })
-  async deleteFile(@Req() req: Request) {
+  async deleteFile(@Param('filePath') filePath: string) {
     try {
-      const fullPath = req.path;
-      const filePath = fullPath.replace(/^\/uploads\/delete\/?/, '');
-
       if (!filePath) {
         throw new BadRequestException('缺少文件路径');
       }
 
-      const normalizedPath = filePath.startsWith('/')
-        ? filePath.substring(1)
-        : filePath;
+      const decodedPath = decodeURIComponent(filePath);
+
+      const normalizedPath = decodedPath.startsWith('/')
+        ? decodedPath.substring(1)
+        : decodedPath;
 
       const exists = await this.cosService.fileExists(normalizedPath);
       if (!exists) {
