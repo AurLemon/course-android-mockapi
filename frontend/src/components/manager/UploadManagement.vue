@@ -439,7 +439,37 @@ const loadFiles = async () => {
     if (response.data.code === 200 && response.data.data) {
       const fileList = response.data.data.files || []
 
-      files.value = fileList
+      const implicitFolders = new Set<string>()
+
+      fileList.forEach((file: FileData) => {
+        if (currentPath.value && !file.key.startsWith(currentPath.value)) return
+
+        const relativePath = currentPath.value
+          ? file.key.substring(currentPath.value.length)
+          : file.key
+
+        const segments = relativePath.split('/').filter((s) => s)
+
+        if (segments.length > 1) {
+          const folderName = segments[0]
+          const folderPath = currentPath.value + folderName + '/'
+          implicitFolders.add(folderPath)
+        }
+      })
+
+      const implicitFolderEntries = Array.from(implicitFolders).map(
+        (folderPath) => ({
+          key: folderPath,
+          url: '',
+          size: 0,
+          lastModified: new Date().toISOString(),
+          isFolder: true,
+        }),
+      )
+
+      const mergedFileList = [...fileList, ...implicitFolderEntries]
+
+      files.value = mergedFileList
         .filter((file: FileData) => {
           if (currentPath.value && file.key === currentPath.value) return false
 
@@ -461,6 +491,13 @@ const loadFiles = async () => {
           isFolder:
             file.key.endsWith('/') && (file.size === 0 || file.size === '0'),
         }))
+
+      const uniqueKeys = new Set<string>()
+      files.value = files.value.filter((file: FileData) => {
+        if (uniqueKeys.has(file.key)) return false
+        uniqueKeys.add(file.key)
+        return true
+      })
     } else {
       files.value = []
     }
