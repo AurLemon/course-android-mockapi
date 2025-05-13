@@ -10,7 +10,9 @@ import { join } from 'path';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  app.setGlobalPrefix('api');
+  app.setGlobalPrefix('api', {
+    exclude: ['/attachments/(.*)'],
+  });
 
   const publicPath = join(process.cwd(), 'public');
   app.use(express.static(publicPath));
@@ -38,10 +40,19 @@ async function bootstrap() {
   app.enableCors();
 
   app.use((req, res, next) => {
-    if (!req.path.startsWith('/api') && !req.path.startsWith('/docs')) {
-      res.sendFile(join(process.cwd(), 'public', 'index.html'));
-    } else {
+    if (
+      req.path.startsWith('/api') ||
+      req.path.startsWith('/docs') ||
+      req.path.startsWith('/attachment') ||
+      req.path.startsWith('/upload')
+    ) {
       next();
+    } else {
+      try {
+        res.sendFile(join(process.cwd(), 'public', 'index.html'));
+      } catch (error) {
+        res.status(404).send('Not Found');
+      }
     }
   });
 

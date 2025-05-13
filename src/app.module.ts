@@ -13,6 +13,8 @@ import { AuthModule } from './auth/auth.module';
 import { NoticesModule } from './notices/notices.module';
 import { AlbumsModule } from './albums/albums.module';
 import { GeneratorModule } from './generator/generator.module';
+import { AttachmentModule } from './attachments/attachments.module';
+import { UploadModule } from './uploads/uploads.module';
 
 @Module({
   imports: [
@@ -23,6 +25,8 @@ import { GeneratorModule } from './generator/generator.module';
     GeneratorModule,
     ConfigModule.forRoot({ isGlobal: true }),
     PrismaModule,
+    AttachmentModule,
+    UploadModule,
   ],
   controllers: [AppController],
   providers: [
