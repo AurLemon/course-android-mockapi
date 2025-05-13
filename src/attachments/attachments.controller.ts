@@ -1,6 +1,6 @@
-import { Controller, Get, Param, Res } from '@nestjs/common';
+import { Controller, Get, Param, Res, Req } from '@nestjs/common';
 import { ApiTags, ApiOperation } from '@nestjs/swagger';
-import { Response } from 'express';
+import { Response, Request } from 'express';
 import { CosService } from '../common/services/cos.service';
 
 @ApiTags('文件访问')
@@ -8,18 +8,24 @@ import { CosService } from '../common/services/cos.service';
 export class AttachmentController {
   constructor(private cosService: CosService) {}
 
-  @Get('*path')
+  @Get('*')
   @ApiOperation({ summary: '获取文件（对象存储）' })
-  async redirectToFile(@Param('path') path: string, @Res() res: Response) {
+  async redirectToFile(@Req() req: Request, @Res() res: Response) {
     try {
-      const normalizedPath = path.startsWith('/') ? path.substring(1) : path;
-      const exists = await this.cosService.fileExists(normalizedPath);
+      const fullPath = req.path;
+      const filePath = fullPath.replace(/^\/attachments\/?/, '');
+
+      if (!filePath) {
+        return res.status(400).send('Missing file path');
+      }
+
+      const exists = await this.cosService.fileExists(filePath);
 
       if (!exists) {
         return res.status(404).send('File Not Found');
       }
 
-      const fileUrl = this.cosService.getObjectUrl(normalizedPath);
+      const fileUrl = this.cosService.getObjectUrl(filePath);
       return res.redirect(302, fileUrl);
     } catch (error) {
       return res.status(404).send('File Not Found');

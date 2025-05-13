@@ -6,12 +6,13 @@ import {
   Param,
   Body,
   UseGuards,
-  Request,
   UploadedFile,
   UseInterceptors,
   Query,
+  Req,
   BadRequestException,
 } from '@nestjs/common';
+import { Request } from 'express';
 import { FileInterceptor } from '@nestjs/platform-express';
 import {
   ApiTags,
@@ -40,8 +41,6 @@ export class UploadController {
   constructor(private cosService: CosService) {}
 
   @Get('list')
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth()
   @ApiOperation({ summary: '获取文件列表' })
   @ApiSuccessResponse(FileListResponseDto, { description: '文件列表' })
   async getFileList(@Query('folder') folder?: string) {
@@ -163,15 +162,25 @@ export class UploadController {
     }
   }
 
-  @Delete('*path')
+  // 修改删除方法
+  @Delete('*')
   @UseGuards(RolesGuard)
   @Roles(0)
   @ApiBearerAuth()
   @ApiOperation({ summary: '删除文件 (管理员)' })
   @ApiSuccessResponse({ success: true }, { description: '文件删除成功' })
-  async deleteFile(@Param('path') path: string) {
+  async deleteFile(@Req() req: Request) {
     try {
-      const normalizedPath = path.startsWith('/') ? path.substring(1) : path;
+      const fullPath = req.path;
+      const filePath = fullPath.replace(/^\/uploads\/delete\/?/, '');
+
+      if (!filePath) {
+        throw new BadRequestException('缺少文件路径');
+      }
+
+      const normalizedPath = filePath.startsWith('/')
+        ? filePath.substring(1)
+        : filePath;
 
       const exists = await this.cosService.fileExists(normalizedPath);
       if (!exists) {
