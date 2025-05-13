@@ -2,7 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 import { useAuthStore } from '../stores/auth'
 
-const ignorePaths = ['/docs', '/api']
+const history = createWebHistory(import.meta.env.BASE_URL)
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -42,6 +42,11 @@ const router = createRouter({
           name: 'AlbumManagement',
           component: () => import('../components/manager/AlbumManagement.vue'),
         },
+        {
+          path: 'uploads',
+          name: 'UploadManagement',
+          component: () => import('../components/manager/UploadManagement.vue'),
+        },
       ],
     },
     {
@@ -53,12 +58,6 @@ const router = createRouter({
 })
 
 router.beforeEach((to, from, next) => {
-  const shouldBeIgnored = ignorePaths.some((path) => to.path.startsWith(path))
-  if (shouldBeIgnored) {
-    window.location.href = to.fullPath
-    return
-  }
-
   const requiresAuth = to.matched.some((record) => record.meta.requiresAuth)
   const authStore = useAuthStore()
 
@@ -69,7 +68,6 @@ router.beforeEach((to, from, next) => {
     }
 
     sessionStorage.setItem('redirectPath', to.fullPath)
-
     next({ path: '/manager/login' })
   } else {
     next()

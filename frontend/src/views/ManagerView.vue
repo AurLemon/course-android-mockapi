@@ -74,6 +74,7 @@ const menuItems = [
   { path: '/manager/users', label: '用户管理' },
   { path: '/manager/notices', label: '通知管理' },
   { path: '/manager/albums', label: '相册管理' },
+  { path: '/manager/uploads', label: '附件管理' },
 ]
 
 const logout = async () => {
