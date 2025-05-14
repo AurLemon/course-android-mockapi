@@ -54,6 +54,12 @@ const router = createRouter({
       name: 'Demo',
       component: () => import('../views/DemoView.vue'),
     },
+    {
+      path: '/simulator',
+      name: 'MobileSimulator',
+      component: () => import('../components/demo/MobileDemo.vue'),
+      meta: { fullscreen: true },
+    },
   ],
 })
 

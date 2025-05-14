@@ -1,26 +1,31 @@
 <template>
-  <div
-    class="page-wrapper h-screen flex flex-col"
-    :class="{ 'bg-animated': route.path === '/' }"
-  >
-    <div class="corner tl" v-if="route.path === '/'"></div>
-    <div class="corner tr" v-if="route.path === '/'"></div>
-    <div class="corner br" v-if="route.path === '/'"></div>
-    <div class="corner bl" v-if="route.path === '/'"></div>
-    <PageHeader />
-    <div class="page-container flex flex-col flex-1 overflow-hidden">
-      <router-view v-slot="{ Component }">
-        <transition name="fade" mode="out-in">
-          <component :is="Component" class="flex flex-col flex-1" />
-        </transition>
-      </router-view>
+  <template v-if="route.path === '/simulator'">
+    <router-view />
+  </template>
+  
+  <template v-else>
+    <div
+      class="page-wrapper h-screen flex flex-col"
+      :class="{ 'bg-animated': route.path === '/' }"
+    >
+      <div class="corner tl" v-if="route.path === '/'"></div>
+      <div class="corner tr" v-if="route.path === '/'"></div>
+      <div class="corner br" v-if="route.path === '/'"></div>
+      <div class="corner bl" v-if="route.path === '/'"></div>
+      <PageHeader />
+      <div class="page-container flex flex-col flex-1 overflow-hidden">
+        <router-view v-slot="{ Component }">
+          <transition name="fade" mode="out-in">
+            <component :is="Component" class="flex flex-col flex-1" />
+          </transition>
+        </router-view>
+      </div>
     </div>
-  </div>
+  </template>
 </template>
 
 <script setup lang="ts">
 import { RouterView, useRoute } from 'vue-router'
-
 import PageHeader from './components/layouts/PageHeader.vue'
 
 const route = useRoute()

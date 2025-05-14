@@ -1,11 +1,7 @@
-<script setup lang="ts">
-import MobileDemo from '../components/demo/MobileDemo.vue'
-</script>
-
 <template>
   <div class="page-demo overflow-y-auto">
     <div class="demo-container overflow-hidden rounded-lg shadow-lg border border-[var(--border-color-base--darker)]">
-      <MobileDemo />
+      <iframe src="/simulator" class="block w-full h-full" frameborder="0"></iframe>
     </div>
     <div class="demo-tips text-sm text-[var(--color-text--weaken)] mt-2">此 Demo APP 使用 Claude AI 生成，可能存在问题。</div>
   </div>

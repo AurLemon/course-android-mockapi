@@ -894,7 +894,7 @@
 
     <!-- Android风格底部导航栏 -->
     <div
-      class="absolute bottom-0 left-0 right-0 bg-white shadow-lg border-t border-gray-200"
+      class="fixed bottom-0 left-0 right-0 bg-white shadow-lg border-t border-gray-200"
     >
       <div class="flex justify-around">
         <div
@@ -1137,7 +1137,7 @@ const login = async () => {
         password: loginForm.password,
       }),
     })
-    
+
     auth.token = response.token
     auth.refreshToken = ''
     isLoggedIn.value = true
