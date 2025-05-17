@@ -1,4 +1,5 @@
 import { defineStore } from 'pinia'
+import { useRouter } from 'vue-router'
 import { ref, computed } from 'vue'
 import axios from 'axios'
 
@@ -15,6 +16,7 @@ interface User {
 }
 
 export const useAuthStore = defineStore('auth', () => {
+  const router = useRouter()
   const token = ref<string | null>(localStorage.getItem('token'))
 
   const user = ref<User | null>(null)
@@ -29,7 +31,7 @@ export const useAuthStore = defineStore('auth', () => {
         logout()
 
         if (window.location.pathname !== '/manager/login') {
-          window.location.href = '/manager/login'
+            router.push('/manager/login')
         }
       }
       return Promise.reject(
