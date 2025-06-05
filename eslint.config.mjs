@@ -6,7 +6,7 @@ import tseslint from 'typescript-eslint';
 
 export default tseslint.config(
   {
-    ignores: ['eslint.config.mjs', 'swagger-static/**', 'dist/**', '**/*.d.ts'],
+    ignores: ['eslint.config.mjs', 'swagger-static/**'],
   },
   eslint.configs.recommended,
   ...tseslint.configs.recommendedTypeChecked,
@@ -15,12 +15,12 @@ export default tseslint.config(
     languageOptions: {
       globals: {
         ...globals.node,
-        ...globals.browser,
+        ...globals.jest,
       },
       ecmaVersion: 2022,
       sourceType: 'module',
       parserOptions: {
-        project: './tsconfig.json',
+        projectService: true,
         tsconfigRootDir: import.meta.dirname,
       },
     },
@@ -33,18 +33,10 @@ export default tseslint.config(
       '@typescript-eslint/no-unsafe-assignment': 'off',
       '@typescript-eslint/no-unsafe-call': 'off',
       '@typescript-eslint/no-unsafe-member-access': 'off',
-      '@typescript-eslint/no-unused-vars': 'off',
-      '@typescript-eslint/no-unsafe-return': 'off',
-      '@typescript-eslint/require-await': 'off',
-      'prettier/prettier': [
-        'error',
-        {
-          endOfLine: 'auto',
-          printWidth: 100,
-          semi: true,
-          singleQuote: true,
-        },
-      ],
-    },
+      '@typescript-eslint/no-unsafe-return': 'warn',
+      '@typescript-eslint/no-unused-vars': 'warn',
+      '@typescript-eslint/require-await': 'warn',
+      'prettier/prettier': ['error', { endOfLine: 'auto' }],
+    },    
   },
 );

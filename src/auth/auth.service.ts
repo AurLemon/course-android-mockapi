@@ -397,4 +397,31 @@ export class AuthService {
 
     return { message: '密码修改成功' };
   }
+
+  async adminChangePassword(userId: number, newPassword: string) {
+    const uid = Number(userId);
+
+    if (isNaN(uid)) {
+      throw new BadRequestException('用户ID必须为有效数字');
+    }
+
+    if (!newPassword) {
+      throw new BadRequestException('新密码不能为空');
+    }
+
+    const user = await this.prisma.user.findUnique({
+      where: { uid: uid },
+    });
+
+    if (!user) {
+      throw new BadRequestException('用户不存在');
+    }
+
+    await this.prisma.user.update({
+      where: { uid: uid },
+      data: { password: newPassword },
+    });
+
+    return { message: '密码修改成功' };
+  }
 }

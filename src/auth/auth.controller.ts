@@ -23,12 +23,15 @@ import {
   RefreshTokenDto,
   ChangePasswordDto,
   LogoutResponseDto,
-  ModifyResponseDto
+  ModifyResponseDto,
+  AdminChangePasswordDto,
 } from './dto/auth.dto';
 import { ApiSuccessResponse } from '../common/decorators/api-response.decorator';
 import { ApiCustomFieldResponse } from '../common/decorators/api-response.decorator';
 import { AuthService } from './auth.service';
 import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
+import { RolesGuard } from '../common/guards/roles.guard';
+import { Roles } from '../common/decorators/roles.decorator';
 import { ConfigurableResponseInterceptor } from '../common/interceptors/response.interceptor';
 import { SkipGlobalInterceptor } from 'src/common/decorators/skip-global-interceptor.decorator';
 
@@ -106,6 +109,31 @@ export class AuthController {
         passwordDto.old_password,
         passwordDto.new_password,
       );
+    } catch (error) {
+      throw new BadRequestException(error.message);
+    }
+  }
+
+  @Put('modify/password/admin')
+  @UseGuards(RolesGuard)
+  @Roles(0)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: '管理员修改用户密码' })
+  @ApiSuccessResponse({ success: true }, { description: '密码修改成功' })
+  @ApiResponse({ status: 400, description: '请求参数错误' })
+  @ApiResponse({ status: 401, description: '未授权' })
+  @ApiResponse({ status: 404, description: '用户不存在' })
+  async adminChangePassword(@Body() changePasswordDto: AdminChangePasswordDto) {
+    if (!changePasswordDto.uid || !changePasswordDto.new_password) {
+      throw new BadRequestException('用户 ID 和新密码不能为空');
+    }
+
+    try {
+      await this.authService.adminChangePassword(
+        changePasswordDto.uid,
+        changePasswordDto.new_password,
+      );
+      return { success: true };
     } catch (error) {
       throw new BadRequestException(error.message);
     }

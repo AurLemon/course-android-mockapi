@@ -65,6 +65,11 @@
               @click="editUser(slotProps.data)"
             />
             <Button
+              icon="pi pi-key"
+              class="p-button-sm p-button-help"
+              @click="openChangePasswordDialog(slotProps.data)"
+            />
+            <Button
               icon="pi pi-trash"
               class="p-button-sm p-button-danger"
               @click="confirmDeleteUser(slotProps.data)"
@@ -73,6 +78,40 @@
         </template>
       </Column>
     </DataTable>
+
+    <Dialog
+      v-model:visible="changePasswordDialog"
+      header="修改密码"
+      :style="{ width: '400px' }"
+      :modal="true"
+    >
+      <div class="p-fluid">
+        <div class="field">
+          <label for="newPassword">新密码</label>
+          <Password
+            id="newPassword"
+            v-model="newPassword"
+            toggleMask
+            :feedback="false"
+            class="w-full"
+          />
+        </div>
+      </div>
+      <template #footer>
+        <Button
+          label="取消"
+          icon="pi pi-times"
+          class="p-button-text"
+          @click="changePasswordDialog = false"
+        />
+        <Button
+          label="确认修改"
+          icon="pi pi-check"
+          @click="changeUserPassword"
+          :loading="changingPassword"
+        />
+      </template>
+    </Dialog>
 
     <Dialog
       :visible="userDialog"
@@ -243,6 +282,55 @@ const saving = ref(false)
 const userDialog = ref(false)
 const editMode = ref(false)
 const birthDate = ref<Date | null>(null)
+
+const changePasswordDialog = ref(false)
+const selectedUser = ref<User | null>(null)
+const newPassword = ref('')
+const changingPassword = ref(false)
+
+const openChangePasswordDialog = (userData: User) => {
+  selectedUser.value = userData
+  newPassword.value = ''
+  changePasswordDialog.value = true
+}
+
+const changeUserPassword = async () => {
+  if (!newPassword.value) {
+    toast.add({
+      severity: 'warn',
+      summary: '警告',
+      detail: '新密码不能为空',
+      life: 3000,
+    })
+    return
+  }
+
+  changingPassword.value = true
+  try {
+    await axios.put('/api/auth/modify/password/admin', {
+      uid: selectedUser.value?.uid,
+      new_password: newPassword.value.toString(),
+    })
+
+    toast.add({
+      severity: 'success',
+      summary: '修改成功',
+      detail: '用户密码已更新',
+      life: 3000,
+    })
+    changePasswordDialog.value = false
+  } catch (error) {
+    console.error('修改密码失败:', error)
+    toast.add({
+      severity: 'error',
+      summary: '修改失败',
+      detail: '密码更新失败，请稍后重试',
+      life: 3000,
+    })
+  } finally {
+    changingPassword.value = false
+  }
+}
 
 const formatDateTime = (datetime: string) => {
   if (!datetime) return ''
