@@ -40,6 +40,22 @@ export class RefreshTokenDto {
   refresh_token: string;
 }
 
+export class LogoutResponseDto {
+  @ApiProperty({
+    example: '注销成功',
+    description: '返回信息',
+  })
+  message: string;
+}
+
+export class ModifyResponseDto {
+  @ApiProperty({
+    example: '密码修改成功',
+    description: '返回信息',
+  })
+  message: string;
+}
+
 export class ChangePasswordDto {
   @ApiProperty({
     example: '123456',

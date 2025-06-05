@@ -22,7 +22,10 @@ import {
   LoginResponseDto,
   RefreshTokenDto,
   ChangePasswordDto,
+  LogoutResponseDto,
+  ModifyResponseDto
 } from './dto/auth.dto';
+import { ApiSuccessResponse } from '../common/decorators/api-response.decorator';
 import { ApiCustomFieldResponse } from '../common/decorators/api-response.decorator';
 import { AuthService } from './auth.service';
 import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
@@ -62,6 +65,7 @@ export class AuthController {
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: '用户注销' })
+  @ApiSuccessResponse(LogoutResponseDto)
   @ApiResponse({ status: 200, description: '注销成功' })
   async logout(@Req() req) {
     const authHeader = req.headers.authorization;
@@ -87,6 +91,7 @@ export class AuthController {
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: '修改密码' })
+  @ApiSuccessResponse(ModifyResponseDto)
   @ApiResponse({ status: 200, description: '修改成功' })
   @ApiResponse({ status: 400, description: '请求失败' })
   @ApiResponse({ status: 401, description: '未授权' })
