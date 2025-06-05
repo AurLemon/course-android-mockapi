@@ -14,6 +14,18 @@ async function bootstrap() {
     exclude: ['/attachments/(.*)'],
   });
 
+  const swaggerPublicPath = join(process.cwd(), 'swagger-static');
+  app.use(
+    '/swagger-static',
+    express.static(swaggerPublicPath, {
+      setHeaders: (res, path) => {
+        if (path.endsWith('.js')) {
+          res.type('application/javascript');
+        }
+      },
+    }),
+  );
+
   const publicPath = join(process.cwd(), 'public');
   app.use(express.static(publicPath));
 
@@ -31,7 +43,11 @@ async function bootstrap() {
     .addBearerAuth()
     .build();
   const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('docs', app, document);
+
+  SwaggerModule.setup('docs', app, document, {
+    customJs: ['/swagger-static/main.js'],
+    customCssUrl: '/swagger-static/styles.css',
+  });
 
   app.use(
     helmet({

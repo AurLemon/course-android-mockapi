@@ -1,0 +1,249 @@
+:root {
+  --font-family:
+    'Inter', 'Helvetica Neue', 'Helvetica', 'Roboto', 'BlinkMacSystemFont',
+    'MiSans', 'HarmonyOS Sans SC', 'PingFang SC', 'Hiragino Sans GB',
+    'Microsoft YaHei', '微软雅黑', Arial, sans-serif;
+  --color-primary__h: 200;
+  --color-primary__s: 55%;
+  --color-primary__l: 48%;
+  --color-surface-0__s: 3%;
+  --color-surface-0__l: 98%;
+  --color-surface-1__s: 3%;
+  --color-surface-1__l: 95%;
+  --color-surface-2__s: 10%;
+  --color-surface-2__l: 93%;
+  --color-surface-3__s: 10%;
+  --color-surface-3__l: 85%;
+  --color-surface-4__s: 10%;
+  --color-surface-4__l: 74%;
+  --color-primary: hsl(
+    var(--color-primary__h),
+    var(--color-primary__s),
+    var(--color-primary__l)
+  );
+  --color-primary--hover: hsl(
+    var(--color-primary__h),
+    var(--color-primary__s),
+    calc(var(--color-primary__l) * 1.2)
+  );
+  --color-primary--active: hsl(
+    var(--color-primary__h),
+    var(--color-primary__s),
+    calc(var(--color-primary__l) * 0.8)
+  );
+  --color-surface-0: hsl(
+    var(--color-primary__h),
+    var(--color-surface-0__s),
+    var(--color-surface-0__l)
+  );
+  --color-surface-1: hsl(
+    var(--color-primary__h),
+    var(--color-surface-1__s),
+    var(--color-surface-1__l)
+  );
+  --color-surface-2: hsl(
+    var(--color-primary__h),
+    var(--color-surface-2__s),
+    var(--color-surface-2__l)
+  );
+  --color-surface-3: hsl(
+    var(--color-primary__h),
+    var(--color-surface-3__s),
+    var(--color-surface-3__l)
+  );
+  --color-surface-4: hsl(
+    var(--color-primary__h),
+    var(--color-surface-4__s),
+    var(--color-surface-4__l)
+  );
+  --color-light:
+    var(--color-primary__h), var(--color-surface-0__s),
+    var(--color-surface-0__l);
+  --color-dark: var(--color-primary__h), 20%, 10%;
+  --border-color-base: rgba(0, 0, 0, 0.05);
+  --border-color-base--lighter: rgba(0, 0, 0, 0.02);
+  --border-color-base--darker: rgba(0, 0, 0, 0.08);
+  --border-color-input: rgba(0, 0, 0, 0.05);
+  --border-color-input--hover: rgba(0, 0, 0, 0.4);
+  --box-shadow-diverge: 0 10px 20px var(--border-color-base--lighter);
+  --background-color-primary--hover: hsl(
+    var(--color-primary__h),
+    var(--color-primary__s),
+    95%
+  );
+  --background-color-primary--active: hsl(
+    var(--color-primary__h),
+    var(--color-primary__s),
+    90%
+  );
+  --background-color-overlay: hsla(
+    var(--color-primary__h),
+    var(--color-surface-0__s),
+    var(--color-surface-0__l),
+    0.95
+  );
+  --background-color-overlay--lighter: hsla(
+    var(--color-primary__h),
+    var(--color-surface-0__s),
+    var(--color-surface-0__l),
+    0.6
+  );
+  --background-light-0: hsla(var(--color-light), 0.1);
+  --background-light-0--active: hsla(var(--color-light), 0.05);
+  --background-light-1: hsla(var(--color-light), 0.3);
+  --background-light-2: hsla(var(--color-light), 0.6);
+  --background-light-2--hover: hsla(var(--color-light), 0.5);
+  --background-light-3: hsla(var(--color-light), 0.75);
+  --background-light-4: hsla(var(--color-light), 0.9);
+  --background-dark-0: hsla(var(--color-dark), 0.1);
+  --background-dark-1: hsla(var(--color-dark), 0.3);
+  --background-dark-2: hsla(var(--color-dark), 0.6);
+  --color-text: hsl(var(--color-primary__h), 29%, 24%);
+  --color-text--emphasized: hsl(var(--color-primary__h), 85%, 5%);
+  --color-text--subtle: hsl(var(--color-primary__h), 30%, 35%);
+  --color-text--weaken: hsl(var(--color-primary__h), 15%, 60%);
+  --success-color: #00ba68;
+  --failed-color: #c73413;
+}
+
+::selection {
+  background: hsla(var(--color-primary__h), 5%, 54%, 22%);
+}
+
+*,
+*::before,
+*::after {
+  scrollbar-color: var(--color-surface-3) transparent;
+  scrollbar-width: thin;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+.custom-container {
+  position: relative;
+  width: 100%;
+  height: 240px;
+  margin-bottom: 1rem;
+  border-radius: 16px;
+  border: 1px solid var(--border-color-base--darker);
+  transition: 300ms;
+  overflow: hidden;
+}
+
+.custom-container:hover {
+  box-shadow: 0 0 32px var(--background-color-primary--hover);
+}
+
+.custom-container a {
+  color: var(--color-primary);
+  text-decoration: none;
+}
+
+.custom-container a:hover {
+  text-decoration: underline;
+}
+
+.custom-background {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  position: absolute;
+  left: 0;
+  right: 50%;
+  bottom: 0;
+  z-index: 0;
+  transform: translate(-60px, -75%) rotate(-15deg);
+  gap: 8px;
+  width: 100%;
+  height: 100%;
+}
+
+.background-video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+  border-radius: 50%;
+}
+
+.custom-foreground {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  text-align: center;
+  z-index: 100;
+  background: radial-gradient(transparent 0% 55%, var(--background-light-4) 70% 150%);
+}
+
+.custom-title {
+  font-size: 28px;
+  margin: 0 !important;
+}
+
+.custom-repo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 1rem 0;
+}
+
+.custom-repo .custom-repo__desc {
+  color: var(--color-text--subtle);
+  font-size: 0.9375rem;
+}
+
+.custom-repo .custom-repo__link {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.custom-repo .custom-repo__link a {
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
+  border-radius: 6px;
+  background: var(--background-light-3);
+  backdrop-filter: blur(4px);
+  border: 1px solid var(--border-color-base);
+  padding: 0.25rem 0.625rem;
+  text-decoration: none;
+  color: var(--color-primary);
+  transition: 300ms;
+}
+
+.custom-repo .custom-repo__link a:hover {
+  color: #fff;
+  background-color: var(--color-primary);
+}
+
+.custom-describe {
+  color: var(--color-text--subtle);
+}
+
+.custom-footer {
+  padding: 1.5rem;
+  background: var(--color-surface-1);
+  border-top: 1px solid var(--border-color-base);
+  text-align: center;
+  font-size: 0.9em;
+  color: var(--color-text--subtle);
+}
+
+.custom-footer .footer-content {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.custom-footer p {
+  margin: 0.5rem 0;
+}
