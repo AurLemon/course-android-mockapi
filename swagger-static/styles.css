@@ -134,7 +134,7 @@ html {
 }
 
 .custom-container:hover {
-  box-shadow: 0 0 32px var(--background-color-primary--hover);
+  box-shadow: 0 0 12px var(--background-color-primary--hover);
 }
 
 .custom-container a {
