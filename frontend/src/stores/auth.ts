@@ -31,7 +31,7 @@ export const useAuthStore = defineStore('auth', () => {
         logout()
 
         if (window.location.pathname !== '/manager/login') {
-            router.push('/manager/login')
+          router.push('/manager/login')
         }
       }
       return Promise.reject(

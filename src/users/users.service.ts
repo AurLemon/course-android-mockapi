@@ -21,7 +21,7 @@ type UserListItem = {
   birth: string | null;
   dept: string | null;
   role: number;
-  regtime: Date;
+  regtime: string;
   balance: number;
 };
 
@@ -44,7 +44,7 @@ export class UsersService {
 
   // 获取所有用户列表
   async findAll(): Promise<UserListItem[]> {
-    return this.prisma.user.findMany({
+    const users = await this.prisma.user.findMany({
       select: {
         uid: true,
         username: true,
@@ -57,7 +57,18 @@ export class UsersService {
         regtime: true,
         balance: true,
       },
+      orderBy: { uid: 'asc' },
     });
+
+    return users.map((user) => ({
+      ...user,
+      regtime: user.regtime
+        .toLocaleString('sv-SE', {
+          timeZone: 'Asia/Shanghai',
+          hour12: false,
+        })
+        .replace('T', ' '),
+    }));
   }
 
   // 通过ID获取用户信息

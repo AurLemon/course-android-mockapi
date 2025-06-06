@@ -334,7 +334,7 @@ const changeUserPassword = async () => {
 
 const formatDateTime = (datetime: string) => {
   if (!datetime) return ''
-  return dayjs(datetime).tz('Asia/Shanghai').format('YYYY-MM-DD HH:mm:ss')
+  return dayjs(datetime).format('YYYY-MM-DD HH:mm:ss')
 }
 
 const birthDateFormatted = computed(() => {
