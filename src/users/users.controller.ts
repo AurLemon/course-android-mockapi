@@ -13,12 +13,7 @@ import {
   Query,
   ParseIntPipe,
 } from '@nestjs/common';
-import {
-  ApiTags,
-  ApiOperation,
-  ApiResponse,
-  ApiBearerAuth,
-} from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 
 import { UsersService } from './users.service';
 import {
@@ -36,6 +31,7 @@ import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
 import { RolesGuard } from '../common/guards/roles.guard';
 import { Roles } from '../common/decorators/roles.decorator';
 import { ApiSuccessResponse } from '../common/decorators/api-response.decorator';
+import { SkipGlobalInterceptor } from '../common/decorators/skip-global-interceptor.decorator';
 
 @ApiTags('用户管理')
 @Controller('users')
@@ -47,12 +43,19 @@ export class UsersController {
   @Roles(0)
   @ApiBearerAuth()
   @ApiOperation({ summary: '获取所有用户列表 (管理员)' })
-  @ApiSuccessResponse(UserListResponseDto, {
-    isArray: true,
-    description: '返回用户列表',
-  })
+  @SkipGlobalInterceptor()
   async findAll() {
-    return this.usersService.findAll();
+    const [users, total] = await Promise.all([
+      this.usersService.findAll(),
+      this.usersService.getTotalCount(),
+    ]);
+
+    return {
+      code: 200,
+      msg: '操作成功',
+      data: users,
+      total: total,
+    };
   }
 
   @Post('add')

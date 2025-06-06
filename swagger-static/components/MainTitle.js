@@ -40,9 +40,9 @@ export default {
     const generateGrid = () => {
       const positions = []
       const videos = [
-        { path: '/swagger-static/kipfel/1.webm', rotate: -15 },
-        { path: '/swagger-static/kipfel/2.webm', rotate: 5 },
-        { path: '/swagger-static/kipfel/3.webm', rotate: 25 }
+        { path: 'https://mock-api-1254268741.cos.ap-shanghai.myqcloud.com/kipfel/1.webm', rotate: -15 },
+        { path: 'https://mock-api-1254268741.cos.ap-shanghai.myqcloud.com/kipfel/2.webm', rotate: 5 },
+        { path: 'https://mock-api-1254268741.cos.ap-shanghai.myqcloud.com/kipfel/3.webm', rotate: 25 }
       ]
 
       for (let row = 1; row <= 3; row++) {

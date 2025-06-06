@@ -71,6 +71,11 @@ export class UsersService {
     }));
   }
 
+  // 新增统计方法
+  async getTotalCount(): Promise<number> {
+    return this.prisma.user.count();
+  }
+
   // 通过ID获取用户信息
   async findById(uid: number): Promise<UserInfo> {
     const user = await this.prisma.user.findUnique({

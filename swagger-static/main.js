@@ -1,6 +1,6 @@
 const initVueApp = async () => {
   try {
-    const { createApp } = await import('/swagger-static/js/vue.esm-browser.min.js')
+    const { createApp } = await import('https://mock-api-1254268741.cos.ap-shanghai.myqcloud.com/js/vue.esm-browser.min.js')
     const MainTitle = await import('./components/MainTitle.js')
     
     const waitForInfoContainer = () => {
