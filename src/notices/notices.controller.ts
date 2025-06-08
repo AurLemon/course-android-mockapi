@@ -45,7 +45,7 @@ export class NoticesController {
   @UseGuards(RolesGuard)
   @Roles(0)
   @ApiBearerAuth()
-  @ApiOperation({ summary: '发布通知 (管理员)' })
+  @ApiOperation({ summary: '发布通知（管理员）' })
   @ApiSuccessResponse(NoticeResponseDto)
   async create(@Body() createNoticeDto: CreateNoticeDto, @Request() req) {
     return this.noticesService.create(createNoticeDto, req.user.userId);
@@ -55,7 +55,7 @@ export class NoticesController {
   @UseGuards(RolesGuard)
   @Roles(0)
   @ApiBearerAuth()
-  @ApiOperation({ summary: '修改通知 (管理员)' })
+  @ApiOperation({ summary: '修改通知（管理员）' })
   @ApiSuccessResponse(NoticeResponseDto)
   async update(
     @Body('id', ParseIntPipe) id: number,
@@ -69,7 +69,7 @@ export class NoticesController {
   @UseGuards(RolesGuard)
   @Roles(0)
   @ApiBearerAuth()
-  @ApiOperation({ summary: '删除通知 (管理员)' })
+  @ApiOperation({ summary: '删除通知（管理员）' })
   @ApiSuccessResponse({ success: true })
   async remove(@Param('id', ParseIntPipe) id: number, @Request() req) {
     return this.noticesService.remove(id, req.user.userId);

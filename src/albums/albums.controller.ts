@@ -61,7 +61,7 @@ export class AlbumsController {
   @UseGuards(RolesGuard)
   @Roles(0)
   @ApiBearerAuth()
-  @ApiOperation({ summary: '发布相册 (管理员)' })
+  @ApiOperation({ summary: '发布相册（管理员）' })
   @ApiSuccessResponse(AlbumResponseDto)
   async create(@Body() createAlbumDto: CreateAlbumDto, @Request() req) {
     return this.albumsService.create(createAlbumDto, req.user.userId);
@@ -71,7 +71,7 @@ export class AlbumsController {
   @UseGuards(RolesGuard)
   @Roles(0)
   @ApiBearerAuth()
-  @ApiOperation({ summary: '修改相册 (管理员)' })
+  @ApiOperation({ summary: '修改相册（管理员）' })
   @ApiSuccessResponse(AlbumResponseDto)
   async update(
     @Param('id', ParseIntPipe) id: number,
@@ -85,7 +85,7 @@ export class AlbumsController {
   @UseGuards(RolesGuard)
   @Roles(0)
   @ApiBearerAuth()
-  @ApiOperation({ summary: '删除相册 (管理员)' })
+  @ApiOperation({ summary: '删除相册（管理员）' })
   @ApiSuccessResponse({ success: true })
   async remove(@Query('id', ParseIntPipe) id: number, @Request() req) {
     return this.albumsService.remove(id, req.user.userId);

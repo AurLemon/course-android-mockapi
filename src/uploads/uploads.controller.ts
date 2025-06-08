@@ -128,7 +128,7 @@ export class UploadController {
   @UseGuards(RolesGuard)
   @Roles(0)
   @ApiBearerAuth()
-  @ApiOperation({ summary: '修改文件名 (管理员)' })
+  @ApiOperation({ summary: '修改文件名（管理员）' })
   @ApiSuccessResponse(FileResponseDto, { description: '文件修改成功' })
   async modifyFile(@Body() modifyDto: ModifyFileDto) {
     try {
@@ -167,7 +167,7 @@ export class UploadController {
   @UseGuards(RolesGuard)
   @Roles(0)
   @ApiBearerAuth()
-  @ApiOperation({ summary: '删除文件 (管理员)' })
+  @ApiOperation({ summary: '删除文件（管理员）' })
   @ApiSuccessResponse({ success: true }, { description: '文件删除成功' })
   async deleteFile(@Param('filePath') filePath: string) {
     try {

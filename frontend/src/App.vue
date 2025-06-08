@@ -2,16 +2,16 @@
   <template v-if="route.path === '/simulator'">
     <router-view />
   </template>
-  
+
   <template v-else>
     <div
       class="page-wrapper h-screen flex flex-col"
       :class="{ 'bg-animated': route.path === '/' }"
     >
-      <div class="corner tl" v-if="route.path === '/'"></div>
-      <div class="corner tr" v-if="route.path === '/'"></div>
-      <div class="corner br" v-if="route.path === '/'"></div>
-      <div class="corner bl" v-if="route.path === '/'"></div>
+      <div class="corner tl" v-if="route.path === '/'" />
+      <div class="corner tr" v-if="route.path === '/'" />
+      <div class="corner br" v-if="route.path === '/'" />
+      <div class="corner bl" v-if="route.path === '/'" />
       <PageHeader />
       <div class="page-container flex flex-col flex-1 overflow-hidden">
         <router-view v-slot="{ Component }">
@@ -25,10 +25,33 @@
 </template>
 
 <script setup lang="ts">
-import { RouterView, useRoute } from 'vue-router'
+import { onMounted } from 'vue'
+import { RouterView, useRoute, useRouter } from 'vue-router'
 import PageHeader from './components/layouts/PageHeader.vue'
+import axios from 'axios'
+import { useAuthStore } from './stores/auth'
 
 const route = useRoute()
+const router = useRouter()
+
+let isHandling401 = false
+
+onMounted(() => {
+  axios.interceptors.response.use(
+    (response) => response,
+    async (error) => {
+      const isLoginRequest = error.config.url.includes('/auth/login')
+      
+      if (error.response?.status === 401 && !isHandling401 && isLoginRequest) {
+        isHandling401 = true
+        const authStore = useAuthStore()
+        await authStore.logout().catch(() => {})
+        router.push({ name: 'Login' })
+      }
+      return Promise.reject(error)
+    }
+  )
+})
 </script>
 
 <style lang="scss" scoped>

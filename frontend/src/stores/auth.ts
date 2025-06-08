@@ -1,5 +1,4 @@
 import { defineStore } from 'pinia'
-import { useRouter } from 'vue-router'
 import { ref, computed } from 'vue'
 import axios from 'axios'
 
@@ -16,29 +15,12 @@ interface User {
 }
 
 export const useAuthStore = defineStore('auth', () => {
-  const router = useRouter()
   const token = ref<string | null>(localStorage.getItem('token'))
 
   const user = ref<User | null>(null)
 
   const isLoggedIn = computed(() => !!token.value)
-  const isAdmin = computed(() => user.value?.role === 0)
-
-  axios.interceptors.response.use(
-    (response) => response,
-    (error) => {
-      if (error.response && error.response.status === 401) {
-        logout()
-
-        if (window.location.pathname !== '/manager/login') {
-          router.push('/manager/login')
-        }
-      }
-      return Promise.reject(
-        error instanceof Error ? error : new Error(String(error)),
-      )
-    },
-  )
+  const isAdmin = computed(() => user.value?.role !== 1)
 
   const loadUserFromStorage = () => {
     const userStr = localStorage.getItem('user')

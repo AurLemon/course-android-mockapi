@@ -1,6 +1,8 @@
 <template>
   <div class="rounded-lg w-96">
-    <h2 class="text-2xl font-semibold mb-6 text-center text-[var(--color-text)]">
+    <h2
+      class="text-2xl font-semibold mb-6 text-center text-[var(--color-text)]"
+    >
       管理员登录
     </h2>
 
@@ -10,7 +12,9 @@
 
     <form @submit.prevent="handleLogin" class="space-y-4">
       <div>
-        <label class="block mb-1 font-medium text-[var(--color-text--subtle)]">用户名</label>
+        <label class="block mb-1 font-medium text-[var(--color-text--subtle)]"
+          >用户名</label
+        >
         <InputText
           v-model="username"
           type="text"
@@ -21,7 +25,9 @@
       </div>
 
       <div>
-        <label class="block mb-1 font-medium text-[var(--color-text--subtle)]">密码</label>
+        <label class="block mb-1 font-medium text-[var(--color-text--subtle)]"
+          >密码</label
+        >
         <InputText
           v-model="password"
           type="password"
@@ -72,7 +78,6 @@ const handleLogin = async () => {
         emit('login-success')
       } else {
         errorMsg.value = '只有管理员可以访问此页面'
-        await authStore.logout()
       }
     } else {
       errorMsg.value = '用户名或密码错误'

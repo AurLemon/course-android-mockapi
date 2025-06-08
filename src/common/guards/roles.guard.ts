@@ -32,12 +32,14 @@ export class RolesGuard implements CanActivate {
 
     const { user } = context.switchToHttp().getRequest();
 
-    const hasRole = requiredRoles.some((role) => user.role === role);
+    if (user.role === 2) {
+      return true;
+    }
 
+    const hasRole = requiredRoles.some((role) => user.role === role);
     if (!hasRole) {
       throw new ForbiddenException('您没有访问权限');
     }
-
     return true;
   }
 }

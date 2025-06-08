@@ -116,9 +116,9 @@ export class AuthController {
 
   @Put('modify/password/admin')
   @UseGuards(RolesGuard)
-  @Roles(0)
+  @Roles(2)
   @ApiBearerAuth()
-  @ApiOperation({ summary: '管理员修改用户密码' })
+  @ApiOperation({ summary: '修改用户密码（超级管理员）' })
   @ApiSuccessResponse({ success: true }, { description: '密码修改成功' })
   @ApiResponse({ status: 400, description: '请求参数错误' })
   @ApiResponse({ status: 401, description: '未授权' })

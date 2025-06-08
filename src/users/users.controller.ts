@@ -42,7 +42,7 @@ export class UsersController {
   @UseGuards(RolesGuard)
   @Roles(0)
   @ApiBearerAuth()
-  @ApiOperation({ summary: '获取所有用户列表 (管理员)' })
+  @ApiOperation({ summary: '获取所有用户列表（管理员）' })
   @SkipGlobalInterceptor()
   async findAll() {
     const [users, total] = await Promise.all([
@@ -60,9 +60,9 @@ export class UsersController {
 
   @Post('add')
   @UseGuards(RolesGuard)
-  @Roles(0)
+  @Roles(2)
   @ApiBearerAuth()
-  @ApiOperation({ summary: '添加用户 (管理员)' })
+  @ApiOperation({ summary: '添加用户（超级管理员）' })
   @ApiSuccessResponse(UserInfoResponseDto, { description: '用户创建成功' })
   async create(@Body() createUserDto: CreateUserDto) {
     return this.usersService.create(createUserDto);
@@ -79,9 +79,9 @@ export class UsersController {
 
   @Put('info/modify')
   @UseGuards(RolesGuard)
-  @Roles(0)
+  @Roles(2)
   @ApiBearerAuth()
-  @ApiOperation({ summary: '修改用户信息 (管理员)' })
+  @ApiOperation({ summary: '修改用户信息（超级管理员）' })
   @ApiSuccessResponse(UserInfoResponseDto, { description: '用户信息修改成功' })
   async updateByAdmin(
     @Body('uid') uid: number,
@@ -108,9 +108,9 @@ export class UsersController {
 
   @Delete('delete/:uid')
   @UseGuards(RolesGuard)
-  @Roles(0)
+  @Roles(2)
   @ApiBearerAuth()
-  @ApiOperation({ summary: '删除用户 (管理员)' })
+  @ApiOperation({ summary: '删除用户（超级管理员）' })
   @ApiSuccessResponse({ success: true }, { description: '用户删除成功' })
   async remove(@Param('uid', ParseIntPipe) uid: number) {
     await this.usersService.remove(uid);

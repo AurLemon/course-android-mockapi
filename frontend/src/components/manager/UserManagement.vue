@@ -51,8 +51,14 @@
       <Column field="role" header="角色" style="width: 10%">
         <template #body="slotProps">
           <Badge
-            :value="slotProps.data.role === 0 ? '管理员' : '学生'"
-            :severity="slotProps.data.role === 0 ? 'danger' : 'success'"
+            :value="
+              slotProps.data.role !== 1
+                ? slotProps.data.role === 0
+                  ? '管理员'
+                  : '超级管理员'
+                : '学生'
+            "
+            :severity="slotProps.data.role !== 1 ? 'danger' : 'success'"
           />
         </template>
       </Column>
@@ -189,12 +195,16 @@
           <InputText id="dept" v-model="user.dept" class="ml-auto w-80" />
         </div>
 
-        <div class="field mb-4 flex items-center gap-[0.5rem]">
+        <div
+          v-if="isSuperAdmin"
+          class="field mb-4 flex items-center gap-[0.5rem]"
+        >
           <label for="role">角色</label>
           <Dropdown
             id="role"
             v-model="user.role"
             :options="[
+              { label: '超级管理员', value: 2 },
               { label: '管理员', value: 0 },
               { label: '学生', value: 1 },
             ]"
@@ -288,6 +298,9 @@ const selectedUser = ref<User | null>(null)
 const newPassword = ref('')
 const changingPassword = ref(false)
 
+const currentUser = ref<null | { role: number }>(null)
+const isSuperAdmin = computed(() => currentUser.value?.role === 2)
+
 const openChangePasswordDialog = (userData: User) => {
   selectedUser.value = userData
   newPassword.value = ''
@@ -349,6 +362,19 @@ const birthDateFormatted = computed(() => {
 })
 
 onMounted(async () => {
+  try {
+    const res = await axios.get('/api/users/info')
+    currentUser.value = res.data.data
+  } catch (err) {
+    toast.add({
+      severity: 'error',
+      summary: '获取用户信息失败',
+      detail: '无法获取当前用户信息，部分功能可能受限',
+      life: 3000,
+    })
+    console.error(err)
+  }
+
   await loadUsers()
 })
 
@@ -408,14 +434,20 @@ const saveUser = async () => {
     }
 
     if (editMode.value) {
-      await axios.put('/api/users/info/modify', {
+      const payload: any = {
         uid: user.value.uid,
         trueName: user.value.trueName,
         sex: user.value.sex,
         telephone: user.value.telephone,
         birth: user.value.birth,
         dept: user.value.dept,
-      })
+      }
+
+      if (isSuperAdmin.value) {
+        payload.role = user.value.role
+      }
+
+      await axios.put('/api/users/info/modify', payload)
 
       toast.add({
         severity: 'success',

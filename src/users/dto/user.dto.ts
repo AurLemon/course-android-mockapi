@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import {
+  IsIn,
   IsInt,
   IsNotEmpty,
   IsOptional,
@@ -106,6 +107,12 @@ export class UpdateUserDto {
   @IsOptional()
   @IsString()
   dept?: string;
+
+  @IsOptional()
+  @IsIn([0, 1, 2], {
+    message: 'role 必须是 0（管理员）、1（普通用户）或 2（超级管理员）之一',
+  })
+  role?: number;
 }
 
 export class UpdateUserSelfDto {
