@@ -68,8 +68,8 @@ export class UploadController {
   @Put('file')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  @Roles(0)
-  @ApiOperation({ summary: '上传文件（管理员）' })
+  @Roles(2)
+  @ApiOperation({ summary: '上传文件（超级管理员）' })
   @ApiConsumes('multipart/form-data')
   @ApiBody({
     schema: {
@@ -126,9 +126,9 @@ export class UploadController {
 
   @Put('modify')
   @UseGuards(RolesGuard)
-  @Roles(0)
+  @Roles(2)
   @ApiBearerAuth()
-  @ApiOperation({ summary: '修改文件名（管理员）' })
+  @ApiOperation({ summary: '修改文件名（超级管理员）' })
   @ApiSuccessResponse(FileResponseDto, { description: '文件修改成功' })
   async modifyFile(@Body() modifyDto: ModifyFileDto) {
     try {
@@ -165,9 +165,9 @@ export class UploadController {
 
   @Delete('*filePath')
   @UseGuards(RolesGuard)
-  @Roles(0)
+  @Roles(2)
   @ApiBearerAuth()
-  @ApiOperation({ summary: '删除文件（管理员）' })
+  @ApiOperation({ summary: '删除文件（超级管理员）' })
   @ApiSuccessResponse({ success: true }, { description: '文件删除成功' })
   async deleteFile(@Param('filePath') filePath: string) {
     try {

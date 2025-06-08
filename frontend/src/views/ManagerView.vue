@@ -62,12 +62,14 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { useAuthStore } from '../stores/auth'
 import { useRouter } from 'vue-router'
 
 const authStore = useAuthStore()
 const router = useRouter()
+
+const isSuperAdmin = computed(() => authStore.currentUser?.role === 2)
 
 const menuItems = [
   { path: '/manager', label: '仪表盘' },

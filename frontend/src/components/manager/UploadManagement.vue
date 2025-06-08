@@ -4,6 +4,7 @@
       <h2 class="text-2xl font-semibold text-gray-800">文件管理</h2>
       <div class="flex gap-2">
         <Button
+          v-if="isSuperAdmin"
           label="上传文件"
           icon="pi pi-upload"
           size="small"
@@ -90,7 +91,7 @@
           />
         </template>
       </Column>
-      <Column header="操作" style="width: 20%">
+      <Column header="操作" style="width: 20%" v-if="isSuperAdmin">
         <template #body="slotProps">
           <div class="flex gap-2">
             <Button
@@ -275,6 +276,7 @@ import { ref, onMounted, computed } from 'vue'
 import { useConfirm } from 'primevue/useconfirm'
 import { useToast } from 'primevue/usetoast'
 import axios from 'axios'
+import { useAuthStore } from '@/stores/auth'
 
 import Button from 'primevue/button'
 import DataTable from 'primevue/datatable'
@@ -292,6 +294,10 @@ interface FileData {
   etag?: string
   isFolder?: boolean
 }
+
+const authStore = useAuthStore()
+
+const isSuperAdmin = computed(() => authStore.currentUser?.role === 2)
 
 const confirm = useConfirm()
 const toast = useToast()

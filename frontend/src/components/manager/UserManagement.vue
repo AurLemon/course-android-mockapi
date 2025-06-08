@@ -7,6 +7,7 @@
         icon="pi pi-plus"
         size="small"
         @click="openAddUserDialog"
+        v-if="isSuperAdmin"
       />
     </div>
 
@@ -62,7 +63,7 @@
           />
         </template>
       </Column>
-      <Column header="操作" style="width: 10%">
+      <Column header="操作" style="width: 10%" v-if="isSuperAdmin">
         <template #body="slotProps">
           <div class="flex gap-2">
             <Button
@@ -244,6 +245,7 @@ import axios from 'axios'
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
 import timezone from 'dayjs/plugin/timezone'
+import { useAuthStore } from '@/stores/auth'
 
 dayjs.extend(utc)
 dayjs.extend(timezone)
@@ -273,6 +275,8 @@ interface User {
   balance?: number
 }
 
+const authStore = useAuthStore()
+
 const confirm = useConfirm()
 const toast = useToast()
 
@@ -298,8 +302,7 @@ const selectedUser = ref<User | null>(null)
 const newPassword = ref('')
 const changingPassword = ref(false)
 
-const currentUser = ref<null | { role: number }>(null)
-const isSuperAdmin = computed(() => currentUser.value?.role === 2)
+const isSuperAdmin = computed(() => authStore.currentUser?.role === 2)
 
 const openChangePasswordDialog = (userData: User) => {
   selectedUser.value = userData
@@ -362,19 +365,6 @@ const birthDateFormatted = computed(() => {
 })
 
 onMounted(async () => {
-  try {
-    const res = await axios.get('/api/users/info')
-    currentUser.value = res.data.data
-  } catch (err) {
-    toast.add({
-      severity: 'error',
-      summary: '获取用户信息失败',
-      detail: '无法获取当前用户信息，部分功能可能受限',
-      life: 3000,
-    })
-    console.error(err)
-  }
-
   await loadUsers()
 })
 
