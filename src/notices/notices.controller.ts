@@ -10,7 +10,14 @@ import {
   ParseIntPipe,
   Query,
 } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiBearerAuth,
+  ApiResponse,
+  ApiExtraModels,
+  getSchemaPath,
+} from '@nestjs/swagger';
 import { NoticesService } from './notices.service';
 import {
   CreateNoticeDto,
@@ -30,7 +37,22 @@ export class NoticesController {
 
   @Get('list')
   @ApiOperation({ summary: '获取通知列表' })
-  @ApiSuccessResponse(NoticeResponseDto, { isArray: true })
+  @ApiResponse({
+    status: 200,
+    description: '操作成功',
+    schema: {
+      properties: {
+        code: { type: 'number', example: 200 },
+        msg: { type: 'string', example: '操作成功' },
+        total: { type: 'number', example: 100 },
+        data: {
+          type: 'array',
+          items: { $ref: getSchemaPath(NoticeResponseDto) },
+        },
+      },
+    },
+  })
+  @ApiExtraModels(NoticeResponseDto)
   @SkipGlobalInterceptor()
   async findAll() {
     const [notices, total] = await Promise.all([

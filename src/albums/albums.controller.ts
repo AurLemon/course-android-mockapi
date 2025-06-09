@@ -11,7 +11,14 @@ import {
   Put,
   Query,
 } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiBearerAuth,
+  ApiResponse,
+  ApiExtraModels,
+  getSchemaPath,
+} from '@nestjs/swagger';
 import { AlbumsService } from './albums.service';
 import {
   CreateAlbumDto,
@@ -32,7 +39,22 @@ export class AlbumsController {
 
   @Get()
   @ApiOperation({ summary: '获取所有相册' })
-  @ApiSuccessResponse(AlbumResponseDto, { isArray: true })
+  @ApiResponse({
+    status: 200,
+    description: '操作成功',
+    schema: {
+      properties: {
+        code: { type: 'number', example: 200 },
+        msg: { type: 'string', example: '操作成功' },
+        total: { type: 'number', example: 100 },
+        data: {
+          type: 'array',
+          items: { $ref: getSchemaPath(AlbumResponseDto) },
+        },
+      },
+    },
+  })
+  @ApiExtraModels(AlbumResponseDto)
   @SkipGlobalInterceptor()
   async findAll() {
     const [albums, total] = await Promise.all([
