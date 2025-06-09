@@ -32,6 +32,7 @@ export class NoticesService {
         SELECT "notice_id" 
         FROM "tbl_notice_read" 
         WHERE "user_id" = ${userId} AND "status" = true
+        ORDER BY "notice_id" ASC
       `;
       } catch (error) {
         console.warn('tbl_notice_read 表可能不存在:', error);
@@ -331,9 +332,8 @@ export class NoticesService {
     return { success: true };
   }
 
-  // 获取通知阅读状态详情（管理员）
+  // 获取通知阅读状态
   async getNoticeReadStatus(noticeId: number) {
-    // 检查通知是否存在
     const notice = await this.prisma.notice.findUnique({
       where: { id: noticeId },
     });
@@ -342,45 +342,70 @@ export class NoticesService {
       throw new NotFoundException(`通知ID ${noticeId} 不存在`);
     }
 
-    // 获取所有用户
-    const users = await this.prisma.user.findMany({
-      select: {
-        uid: true,
-        trueName: true,
-      },
-    });
-
-    // 获取已读此通知的用户ID
-    const readRecords = await this.prisma.noticeRead.findMany({
+    const readUsers = await this.prisma.noticeRead.findMany({
       where: {
         noticeId: noticeId,
         status: true,
       },
       select: {
-        userId: true,
+        user: {
+          select: {
+            uid: true,
+            trueName: true,
+            username: true,
+            dept: true,
+          },
+        },
+      },
+      orderBy: {
+        user: {
+          uid: 'asc',
+        },
       },
     });
 
-    const readUserIds = readRecords.map((record) => record.userId);
+    const totalUsersCount = await this.prisma.user.count();
 
-    // 区分已读和未读用户
-    const readUsers = users.filter((user) => readUserIds.includes(user.uid));
-    const unreadUsers = users.filter((user) => !readUserIds.includes(user.uid));
+    const formattedReadUsers = readUsers.map((record) => ({
+      uid: record.user.uid,
+      name: record.user.trueName || '未设置姓名',
+      username: record.user.username || '未设置用户名',
+      dept: record.user.dept || '未分配部门',
+    }));
+
+    const readUserIds = formattedReadUsers.map((user) => user.uid);
+    const unreadUsers = await this.prisma.user.findMany({
+      where: {
+        uid: {
+          notIn: readUserIds,
+        },
+      },
+      select: {
+        uid: true,
+        trueName: true,
+        username: true,
+        dept: true,
+      },
+      orderBy: {
+        uid: 'asc',
+      },
+    });
+
+    const formattedUnreadUsers = unreadUsers.map((user) => ({
+      uid: user.uid,
+      name: user.trueName || '未设置姓名',
+      username: user.username || '未设置用户名',
+      dept: user.dept || '未分配部门',
+    }));
 
     return {
       status: {
-        totalUsers: users.length,
-        readUsers: readUsers.length,
+        totalUsers: totalUsersCount,
+        readUsers: formattedReadUsers.length,
       },
       details: {
-        read: readUsers.map((user) => ({
-          uid: user.uid,
-          name: user.trueName || '未设置姓名',
-        })),
-        unread: unreadUsers.map((user) => ({
-          uid: user.uid,
-          name: user.trueName || '未设置姓名',
-        })),
+        read: formattedReadUsers,
+        unread: formattedUnreadUsers,
       },
     };
   }

@@ -55,7 +55,7 @@ export class AlbumsService {
           },
         },
         orderBy: {
-          createTime: 'desc',
+          id: 'desc', // 修改排序为按照相册ID从大到小
         },
       });
 

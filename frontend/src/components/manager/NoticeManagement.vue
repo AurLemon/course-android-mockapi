@@ -2,7 +2,12 @@
   <div>
     <div class="flex justify-between items-center mb-6">
       <h2 class="text-2xl font-semibold text-gray-800">通知管理</h2>
-      <Button label="发布通知" icon="pi pi-plus" size="small" @click="openAddNoticeDialog" />
+      <Button
+        label="发布通知"
+        icon="pi pi-plus"
+        size="small"
+        @click="openAddNoticeDialog"
+      />
     </div>
 
     <DataTable
@@ -19,10 +24,26 @@
         <div class="text-center">暂无通知数据</div>
       </template>
       <Column field="id" header="ID" sortable style="width: 5%"></Column>
-      <Column field="title" header="标题" sortable style="width: 25%"></Column>
-      <Column field="content" header="内容" style="width: 40%">
+      <Column field="title" header="标题" sortable style="width: 20%"></Column>
+      <Column field="content" header="内容" style="width: 35%">
         <template #body="slotProps">
           <div class="truncate max-w-md">{{ slotProps.data.content }}</div>
+        </template>
+      </Column>
+      <Column field="readStats" header="阅读状态" style="width: 10%">
+        <template #body="slotProps">
+          <div v-if="slotProps.data.readStats">
+            已读: {{ slotProps.data.readStats.readUsers }}/{{
+              slotProps.data.readStats.totalUsers
+            }}
+          </div>
+          <div v-else>
+            <i
+              class="pi pi-spin pi-spinner"
+              v-if="loadingStats[slotProps.data.id]"
+            ></i>
+            <span v-else>-</span>
+          </div>
         </template>
       </Column>
       <Column field="createdAt" header="发布时间" sortable style="width: 15%">
@@ -37,6 +58,11 @@
               icon="pi pi-eye"
               class="p-button-sm p-button-secondary"
               @click="viewNotice(slotProps.data)"
+            />
+            <Button
+              icon="pi pi-users"
+              class="p-button-sm p-button-success"
+              @click="viewReadStatus(slotProps.data)"
             />
             <Button
               icon="pi pi-pencil"
@@ -63,12 +89,23 @@
       <div class="p-fluid">
         <div class="field mb-4 flex items-center gap-[0.5rem]">
           <label for="title">标题</label>
-          <InputText id="title" v-model="notice.title" required class="ml-auto w-120" />
+          <InputText
+            id="title"
+            v-model="notice.title"
+            required
+            class="ml-auto w-120"
+          />
         </div>
 
         <div class="field mb-4 flex items-center gap-[0.5rem]">
           <label for="content">内容</label>
-          <Textarea id="content" v-model="notice.content" rows="8" required class="ml-auto w-120" />
+          <Textarea
+            id="content"
+            v-model="notice.content"
+            rows="8"
+            required
+            class="ml-auto w-120"
+          />
         </div>
       </div>
 
@@ -110,6 +147,128 @@
       </template>
     </Dialog>
 
+    <Dialog
+      :visible="readStatusDialog"
+      :style="{ width: '800px' }"
+      header="阅读状态详情"
+      :modal="true"
+      @update:visible="readStatusDialog = false"
+    >
+      <div v-if="selectedReadStatus" class="p-4">
+        <div class="mb-4 flex gap-4">
+          <div class="p-3 bg-blue-50 rounded-lg flex-1 text-center">
+            <div class="text-sm text-gray-600">总用户数</div>
+            <div class="text-xl font-bold text-blue-700">
+              {{ selectedReadStatus.status.totalUsers }}
+            </div>
+          </div>
+          <div class="p-3 bg-green-50 rounded-lg flex-1 text-center">
+            <div class="text-sm text-gray-600">已读用户</div>
+            <div class="text-xl font-bold text-green-700">
+              {{ selectedReadStatus.status.readUsers }}
+            </div>
+          </div>
+          <div class="p-3 bg-orange-50 rounded-lg flex-1 text-center">
+            <div class="text-sm text-gray-600">未读用户</div>
+            <div class="text-xl font-bold text-orange-700">
+              {{
+                selectedReadStatus.status.totalUsers -
+                selectedReadStatus.status.readUsers
+              }}
+            </div>
+          </div>
+        </div>
+
+        <div class="border-t pt-4">
+          <div class="mb-4">
+            <div class="font-semibold mb-2 text-lg">已读用户</div>
+            <DataTable
+              :value="selectedReadStatus.details.read"
+              class="p-datatable-sm"
+              v-if="selectedReadStatus.details.read.length > 0"
+              :sortMode="'multiple'"
+              :removableSort="true"
+            >
+              <Column
+                field="uid"
+                header="用户ID"
+                sortable
+                style="width: 15%"
+              ></Column>
+              <Column
+                field="name"
+                header="姓名"
+                sortable
+                style="width: 20%"
+              ></Column>
+              <Column
+                field="username"
+                header="用户名"
+                sortable
+                style="width: 25%"
+              ></Column>
+              <Column
+                field="dept"
+                header="部门"
+                sortable
+                style="width: 40%"
+              ></Column>
+            </DataTable>
+            <div class="text-center text-gray-500 py-2" v-else>
+              暂无已读用户
+            </div>
+          </div>
+
+          <div class="mb-4">
+            <div class="font-semibold mb-2 text-lg">未读用户</div>
+            <DataTable
+              :value="selectedReadStatus.details.unread"
+              class="p-datatable-sm"
+              v-if="selectedReadStatus.details.unread.length > 0"
+              :sortMode="'multiple'"
+              :removableSort="true"
+            >
+              <Column
+                field="uid"
+                header="用户ID"
+                sortable
+                style="width: 15%"
+              ></Column>
+              <Column
+                field="name"
+                header="姓名"
+                sortable
+                style="width: 20%"
+              ></Column>
+              <Column
+                field="username"
+                header="用户名"
+                sortable
+                style="width: 25%"
+              ></Column>
+              <Column
+                field="dept"
+                header="部门"
+                sortable
+                style="width: 40%"
+              ></Column>
+            </DataTable>
+            <div class="text-center text-gray-500 py-2" v-else>
+              暂无未读用户
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <template #footer>
+        <Button
+          label="关闭"
+          icon="pi pi-times"
+          @click="readStatusDialog = false"
+        />
+      </template>
+    </Dialog>
+
     <ConfirmDialog></ConfirmDialog>
   </div>
 </template>
@@ -136,6 +295,31 @@ interface Notice {
   updatedAt?: string
   authorId?: number
   authorName?: string
+  readStats?: {
+    readUsers: number
+    totalUsers: number
+  }
+}
+
+interface ReadStatus {
+  status: {
+    totalUsers: number
+    readUsers: number
+  }
+  details: {
+    read: Array<{
+      uid: number
+      name: string
+      username: string
+      dept: string
+    }>
+    unread: Array<{
+      uid: number
+      name: string
+      username: string
+      dept: string
+    }>
+  }
 }
 
 const confirm = useConfirm()
@@ -152,6 +336,11 @@ const saving = ref(false)
 const noticeDialog = ref(false)
 const viewDialog = ref(false)
 const editMode = ref(false)
+
+// 状态变量
+const readStatusDialog = ref(false)
+const selectedReadStatus = ref<ReadStatus | null>(null)
+const loadingStats = ref<Record<number, boolean>>({})
 
 const formatDate = (dateStr: string) => {
   if (!dateStr) return ''
@@ -173,8 +362,16 @@ onMounted(async () => {
 const loadNotices = async () => {
   loading.value = true
   try {
+    // 确保请求带上token（axios 应该已经配置好默认headers）
     const response = await axios.get('/api/notices/list')
     notices.value = response.data.data || []
+
+    // 异步加载每个通知的阅读状态
+    notices.value.forEach(async (notice) => {
+      if (notice.id) {
+        await loadNoticeReadStats(notice.id)
+      }
+    })
   } catch (error) {
     console.error('Failed to load notices:', error)
     toast.add({
@@ -185,6 +382,51 @@ const loadNotices = async () => {
     })
   } finally {
     loading.value = false
+  }
+}
+
+const loadNoticeReadStats = async (noticeId: number) => {
+  if (!noticeId) return
+
+  loadingStats.value[noticeId] = true
+
+  try {
+    const response = await axios.get(`/api/notices/${noticeId}/status`)
+    const index = notices.value.findIndex((n) => n.id === noticeId)
+
+    if (index !== -1 && response.data && response.data.data) {
+      notices.value[index] = {
+        ...notices.value[index],
+        readStats: {
+          readUsers: response.data.data.status.readUsers,
+          totalUsers: response.data.data.status.totalUsers,
+        },
+      }
+    }
+  } catch (error) {
+    console.error(`Failed to load read stats for notice ${noticeId}:`, error)
+  } finally {
+    loadingStats.value[noticeId] = false
+  }
+}
+
+const viewReadStatus = async (noticeData: Notice) => {
+  if (!noticeData.id) return
+
+  try {
+    const response = await axios.get(`/api/notices/${noticeData.id}/status`)
+    if (response.data && response.data.data) {
+      selectedReadStatus.value = response.data.data
+      readStatusDialog.value = true
+    }
+  } catch (error) {
+    console.error('Failed to load read status details:', error)
+    toast.add({
+      severity: 'error',
+      summary: '加载失败',
+      detail: '无法加载阅读状态详情，请稍后再试',
+      life: 3000,
+    })
   }
 }
 
