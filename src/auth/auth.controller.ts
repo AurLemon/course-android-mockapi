@@ -6,6 +6,7 @@ import {
   UseGuards,
   Get,
   Req,
+  Res,
   Put,
   BadRequestException,
   UseInterceptors,
@@ -16,6 +17,7 @@ import {
   ApiResponse,
   ApiBearerAuth,
 } from '@nestjs/swagger';
+import { Response } from 'express';
 
 import {
   LoginDto,
@@ -51,15 +53,24 @@ export class AuthController {
   @ApiResponse({ status: 401, description: '用户名或密码错误' })
   @SkipGlobalInterceptor()
   @UseInterceptors(new ConfigurableResponseInterceptor('token'))
-  async login(@Body() loginDto: LoginDto) {
+  async login(@Body() loginDto: LoginDto, @Res() response: Response) {
     try {
       const user = await this.authService.validateUser(
         loginDto.username,
         loginDto.password,
       );
-      return this.authService.login(user);
+      const token = await this.authService.login(user);
+      return response.status(200).json({
+        code: 200,
+        msg: '登录成功',
+        token,
+      });
     } catch (error) {
-      throw new UnauthorizedException(error.message);
+      return response.status(401).json({
+        code: 401,
+        msg: error.message || '用户名或密码错误',
+        token: null,
+      });
     }
   }
 

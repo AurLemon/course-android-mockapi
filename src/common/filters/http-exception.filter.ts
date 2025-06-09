@@ -5,15 +5,39 @@ import {
   HttpException,
   Logger,
 } from '@nestjs/common';
+import { Reflector } from '@nestjs/core';
 import { Response } from 'express';
+import { SKIP_GLOBAL_INTERCEPTOR } from '../decorators/skip-global-interceptor.decorator';
 
 @Catch()
 export class HttpExceptionFilter implements ExceptionFilter {
   private readonly logger = new Logger(HttpExceptionFilter.name);
 
+  constructor(private readonly reflector: Reflector) {}
+
   catch(exception: unknown, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
+    const request = ctx.getRequest();
+
+    // 获取当前路由信息
+    const { handler, controller } = request[Symbol.for('routeInfo')] || {};
+
+    // 检查是否跳过全局拦截器
+    let skipFilter = false;
+    if (handler && controller) {
+      skipFilter = this.reflector.getAllAndOverride<boolean>(
+        SKIP_GLOBAL_INTERCEPTOR,
+        [handler, controller],
+      );
+    }
+
+    // 如果设置了跳过过滤器，直接返回，不处理异常
+    // 这允许异常继续传播，让你在控制器中自行处理
+    if (skipFilter) {
+      return;
+    }
+
     this.logger.error(
       '捕获到异常',
       exception instanceof Error ? exception.stack : String(exception),

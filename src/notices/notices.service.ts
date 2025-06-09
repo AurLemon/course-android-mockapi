@@ -14,7 +14,7 @@ export class NoticesService {
   async findAll() {
     const notices = await this.prisma.notice.findMany({
       orderBy: {
-        createdAt: 'desc', // 最新通知优先显示
+        createdAt: 'desc',
       },
       include: {
         author: {
@@ -25,12 +25,30 @@ export class NoticesService {
       },
     });
 
-    // 处理返回结果，添加作者名称
     return notices.map((notice) => ({
       ...notice,
       authorName: notice.author?.trueName || '管理员',
-      author: undefined, // 移除原始author对象
+      createdAt: notice.createdAt
+        .toLocaleString('sv-SE', {
+          timeZone: 'Asia/Shanghai',
+          hour12: false,
+        })
+        .replace('T', ' '),
+      updatedAt: notice.updatedAt
+        ? notice.updatedAt
+            .toLocaleString('sv-SE', {
+              timeZone: 'Asia/Shanghai',
+              hour12: false,
+            })
+            .replace('T', ' ')
+        : null,
+      author: undefined,
     }));
+  }
+
+  // 获取通知总数
+  async getTotalCount() {
+    return await this.prisma.notice.count();
   }
 
   // 获取单个通知详情
@@ -53,13 +71,26 @@ export class NoticesService {
     return {
       ...notice,
       authorName: notice.author?.trueName || '管理员',
-      author: undefined, // 移除原始author对象
+      createdAt: notice.createdAt
+        .toLocaleString('sv-SE', {
+          timeZone: 'Asia/Shanghai',
+          hour12: false,
+        })
+        .replace('T', ' '),
+      updatedAt: notice.updatedAt
+        ? notice.updatedAt
+            .toLocaleString('sv-SE', {
+              timeZone: 'Asia/Shanghai',
+              hour12: false,
+            })
+            .replace('T', ' ')
+        : null,
+      author: undefined,
     };
   }
 
   // 创建通知
   async create(createNoticeDto: CreateNoticeDto, authorId: number) {
-    // 检查用户权限
     const user = await this.prisma.user.findUnique({
       where: { uid: authorId },
     });
@@ -85,13 +116,26 @@ export class NoticesService {
     return {
       ...notice,
       authorName: notice.author?.trueName || '管理员',
+      createdAt: notice.createdAt
+        .toLocaleString('sv-SE', {
+          timeZone: 'Asia/Shanghai',
+          hour12: false,
+        })
+        .replace('T', ' '),
+      updatedAt: notice.updatedAt
+        ? notice.updatedAt
+            .toLocaleString('sv-SE', {
+              timeZone: 'Asia/Shanghai',
+              hour12: false,
+            })
+            .replace('T', ' ')
+        : null,
       author: undefined,
     };
   }
 
   // 更新通知
   async update(id: number, updateNoticeDto: UpdateNoticeDto, userId: number) {
-    // 检查通知是否存在
     const notice = await this.prisma.notice.findUnique({
       where: { id },
     });
@@ -100,7 +144,6 @@ export class NoticesService {
       throw new NotFoundException(`通知ID ${id} 不存在`);
     }
 
-    // 检查用户权限
     const user = await this.prisma.user.findUnique({
       where: { uid: userId },
     });
@@ -124,13 +167,26 @@ export class NoticesService {
     return {
       ...updatedNotice,
       authorName: updatedNotice.author?.trueName || '管理员',
+      createdAt: notice.createdAt
+        .toLocaleString('sv-SE', {
+          timeZone: 'Asia/Shanghai',
+          hour12: false,
+        })
+        .replace('T', ' '),
+      updatedAt: notice.updatedAt
+        ? notice.updatedAt
+            .toLocaleString('sv-SE', {
+              timeZone: 'Asia/Shanghai',
+              hour12: false,
+            })
+            .replace('T', ' ')
+        : null,
       author: undefined,
     };
   }
 
   // 删除通知
   async remove(id: number, userId: number) {
-    // 检查通知是否存在
     const notice = await this.prisma.notice.findUnique({
       where: { id },
     });
@@ -139,7 +195,6 @@ export class NoticesService {
       throw new NotFoundException(`通知ID ${id} 不存在`);
     }
 
-    // 检查用户权限
     const user = await this.prisma.user.findUnique({
       where: { uid: userId },
     });

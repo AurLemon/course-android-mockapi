@@ -281,9 +281,9 @@ onMounted(async () => {
     ])
 
     stats.value = {
-      userCount: (usersResponse.data.data || []).length,
-      noticeCount: (noticesResponse.data.data || []).length,
-      albumCount: (albumsResponse.data.data || []).length,
+      userCount: usersResponse.data.total || 0,
+      noticeCount: noticesResponse.data.total || 0,
+      albumCount: albumsResponse.data.total || 0
     }
   } catch (error) {
     console.error('Failed to load stats:', error)

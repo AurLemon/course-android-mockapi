@@ -53,8 +53,8 @@ export class UsersController {
     return {
       code: 200,
       msg: '操作成功',
-      data: users,
       total: total,
+      data: users,
     };
   }
 

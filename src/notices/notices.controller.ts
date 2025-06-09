@@ -21,6 +21,7 @@ import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
 import { RolesGuard } from '../common/guards/roles.guard';
 import { Roles } from '../common/decorators/roles.decorator';
 import { ApiSuccessResponse } from '../common/decorators/api-response.decorator';
+import { SkipGlobalInterceptor } from '../common/decorators/skip-global-interceptor.decorator';
 
 @ApiTags('通知管理')
 @Controller('notices')
@@ -30,8 +31,19 @@ export class NoticesController {
   @Get('list')
   @ApiOperation({ summary: '获取通知列表' })
   @ApiSuccessResponse(NoticeResponseDto, { isArray: true })
+  @SkipGlobalInterceptor()
   async findAll() {
-    return this.noticesService.findAll();
+    const [notices, total] = await Promise.all([
+      this.noticesService.findAll(),
+      this.noticesService.getTotalCount(),
+    ]);
+
+    return {
+      code: 200,
+      msg: '操作成功',
+      total: total,
+      data: notices,
+    };
   }
 
   @Get(':id')
