@@ -55,15 +55,40 @@ export class AlbumsService {
           },
         },
         orderBy: {
-          createTime: 'desc',
+          id: 'desc', // 修改排序为按照相册ID从大到小
         },
       });
 
-      return this.safeAlbumsConversion(albums);
+      const formattedAlbums = albums.map((album) => ({
+        ...album,
+        createTime: album.createTime
+          ? album.createTime
+              .toLocaleString('sv-SE', {
+                timeZone: 'Asia/Shanghai',
+                hour12: false,
+              })
+              .replace('T', ' ')
+          : null,
+        updateTime: album.updateTime
+          ? album.updateTime
+              .toLocaleString('sv-SE', {
+                timeZone: 'Asia/Shanghai',
+                hour12: false,
+              })
+              .replace('T', ' ')
+          : null,
+      }));
+
+      return this.safeAlbumsConversion(formattedAlbums);
     } catch (error) {
       console.error('查询相册列表失败:', error);
       throw new Error('获取相册列表时发生错误');
     }
+  }
+
+  // 获取相册总数
+  async getTotalCount() {
+    return await this.prisma.album.count();
   }
 
   // 按类型获取相册

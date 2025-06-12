@@ -11,16 +11,16 @@ datasource db {
  * 数据库表结构
  */
 model Token {
-  id                Int      @id @default(autoincrement())
-  userId            Int      @map("user_id")
-  token             String   @unique
-  refreshToken      String   @unique @map("refresh_token")
-  tokenExpires      DateTime @map("token_expires")
+  id                  Int      @id @default(autoincrement())
+  userId              Int      @map("user_id")
+  token               String   @unique
+  refreshToken        String   @unique @map("refresh_token")
+  tokenExpires        DateTime @map("token_expires")
   refreshTokenExpires DateTime @map("refresh_token_expires")
-  lastUsed          DateTime @map("last_used") @default(now())
-  createdAt         DateTime @map("created_at") @default(now())
-  
-  user              User     @relation(fields: [userId], references: [uid])
+  lastUsed            DateTime @default(now()) @map("last_used")
+  createdAt           DateTime @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [uid])
 
   @@map("tbl_token")
 }
@@ -30,19 +30,20 @@ model Token {
  */
 model User {
   uid       Int      @id @default(autoincrement())
-  username  String   @db.VarChar(30) @unique // 学号，唯一标识
+  username  String   @unique @db.VarChar(30) // 学号，唯一标识
   password  String   @db.VarChar(255) // 密码存储需要加密，所以长度要大一些
   trueName  String?  @db.VarChar(10) // 真实姓名
   sex       String?  @db.VarChar(2) // 性别
   telephone String?  @db.VarChar(13) // 手机或座机号码
-  birth     String?  // 出生日期
-  dept      String?  // 专业班级
+  birth     String? // 出生日期
+  dept      String? // 专业班级
   balance   Float    @default(0) // 余额
   regtime   DateTime @default(now()) // 注册时间，使用DateTime类型
   role      Int      @default(1) // 0:管理员，1:普通用户 2:超级管理员
-  
-  notices   Notice[]
-  tokens   Token[]
+
+  notices    Notice[]
+  tokens     Token[]
+  NoticeRead NoticeRead[]
 
   @@map("tbl_user")
 }
@@ -51,8 +52,8 @@ model User {
  * 相册类型表
  */
 model AlbumType {
-  id     Int     @id @default(autoincrement())
-  name   String  @db.VarChar(50)
+  id   Int    @id @default(autoincrement())
+  name String @db.VarChar(50)
 
   albums Album[]
 
@@ -63,15 +64,15 @@ model AlbumType {
  * 相册表
  */
 model Album {
-  id          BigInt    @id @default(autoincrement())
-  title       String    @db.VarChar(200) // 景区名称
-  coverPath   String    @map("cover_path") @db.VarChar(1000) // 封面图片路径
-  describe    String    @db.VarChar(200) // 简介
-  type        Int       // 分类ID
+  id          BigInt     @id @default(autoincrement())
+  title       String     @db.VarChar(200) // 景区名称
+  coverPath   String     @map("cover_path") @db.VarChar(1000) // 封面图片路径
+  describe    String     @db.VarChar(200) // 简介
+  type        Int // 分类ID
   albumType   AlbumType? @relation(fields: [type], references: [id]) // 关联类型表
-  loopPicPath String    @map("loop_pic_path") @db.VarChar(1000) // 存储轮播图路径，以逗号分隔
-  createTime  DateTime? @map("create_time") @default(now()) // 创建时间
-  updateTime  DateTime? @map("update_time") @updatedAt // 更新时间
+  loopPicPath String     @map("loop_pic_path") @db.VarChar(1000) // 存储轮播图路径，以逗号分隔
+  createTime  DateTime?  @default(now()) @map("create_time") // 创建时间
+  updateTime  DateTime?  @updatedAt @map("update_time") // 更新时间
 
   @@map("ss_album")
 }
@@ -80,13 +81,31 @@ model Album {
  * 通知表
  */
 model Notice {
-  id        Int       @id @default(autoincrement())
-  title     String    @db.VarChar(100) // 通知标题
-  content   String    @db.Text // 通知内容
-  createdAt DateTime  @default(now()) @map("created_at") // 创建时间
-  updatedAt DateTime? @updatedAt @map("updated_at") // 更新时间
-  authorId  Int       @map("author_id") // 作者ID
-  author    User      @relation(fields: [authorId], references: [uid]) // 关联到用户
+  id         Int          @id @default(autoincrement())
+  title      String       @db.VarChar(100) // 通知标题
+  content    String       @db.Text // 通知内容
+  createdAt  DateTime     @default(now()) @map("created_at") // 创建时间
+  updatedAt  DateTime?    @updatedAt @map("updated_at") // 更新时间
+  authorId   Int          @map("author_id") // 作者ID
+  author     User         @relation(fields: [authorId], references: [uid]) // 关联到用户
+  NoticeRead NoticeRead[]
 
   @@map("tbl_notice")
+}
+
+/**
+ * 用户已读未读通知信息表
+ */
+model NoticeRead {
+  id       Int       @id @default(autoincrement())
+  userId   Int       @map("user_id")
+  noticeId Int       @map("notice_id")
+  status   Boolean   @default(false) // true: 已读, false: 未读
+  readAt   DateTime? @map("read_at") // 阅读时间
+
+  user   User   @relation(fields: [userId], references: [uid])
+  notice Notice @relation(fields: [noticeId], references: [id])
+
+  @@unique([userId, noticeId]) // 确保用户和通知的组合是唯一的
+  @@map("tbl_notice_read")
 }

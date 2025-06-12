@@ -13,7 +13,14 @@ import {
   Query,
   ParseIntPipe,
 } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiBearerAuth,
+  ApiResponse,
+  ApiExtraModels,
+  getSchemaPath,
+} from '@nestjs/swagger';
 
 import { UsersService } from './users.service';
 import {
@@ -43,6 +50,22 @@ export class UsersController {
   @Roles(0)
   @ApiBearerAuth()
   @ApiOperation({ summary: '获取所有用户列表（管理员）' })
+  @ApiResponse({
+    status: 200,
+    description: '操作成功',
+    schema: {
+      properties: {
+        code: { type: 'number', example: 200 },
+        msg: { type: 'string', example: '操作成功' },
+        total: { type: 'number', example: 100 },
+        data: {
+          type: 'array',
+          items: { $ref: getSchemaPath(UserListResponseDto) },
+        },
+      },
+    },
+  })
+  @ApiExtraModels(UserListResponseDto)
   @SkipGlobalInterceptor()
   async findAll() {
     const [users, total] = await Promise.all([
@@ -53,8 +76,8 @@ export class UsersController {
     return {
       code: 200,
       msg: '操作成功',
-      data: users,
       total: total,
+      data: users,
     };
   }
 

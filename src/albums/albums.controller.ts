@@ -11,7 +11,14 @@ import {
   Put,
   Query,
 } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiBearerAuth,
+  ApiResponse,
+  ApiExtraModels,
+  getSchemaPath,
+} from '@nestjs/swagger';
 import { AlbumsService } from './albums.service';
 import {
   CreateAlbumDto,
@@ -23,6 +30,7 @@ import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
 import { RolesGuard } from '../common/guards/roles.guard';
 import { Roles } from '../common/decorators/roles.decorator';
 import { ApiSuccessResponse } from '../common/decorators/api-response.decorator';
+import { SkipGlobalInterceptor } from '../common/decorators/skip-global-interceptor.decorator';
 
 @ApiTags('景区相册')
 @Controller('albums')
@@ -31,9 +39,35 @@ export class AlbumsController {
 
   @Get()
   @ApiOperation({ summary: '获取所有相册' })
-  @ApiSuccessResponse(AlbumResponseDto, { isArray: true })
+  @ApiResponse({
+    status: 200,
+    description: '操作成功',
+    schema: {
+      properties: {
+        code: { type: 'number', example: 200 },
+        msg: { type: 'string', example: '操作成功' },
+        total: { type: 'number', example: 100 },
+        data: {
+          type: 'array',
+          items: { $ref: getSchemaPath(AlbumResponseDto) },
+        },
+      },
+    },
+  })
+  @ApiExtraModels(AlbumResponseDto)
+  @SkipGlobalInterceptor()
   async findAll() {
-    return this.albumsService.findAll();
+    const [albums, total] = await Promise.all([
+      this.albumsService.findAll(),
+      this.albumsService.getTotalCount(),
+    ]);
+
+    return {
+      code: 200,
+      msg: '操作成功',
+      total: total,
+      data: albums,
+    };
   }
 
   @Get('types')

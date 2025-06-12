@@ -44,7 +44,7 @@ export class ResponseInterceptor<T> implements NestInterceptor<T, Response<T>> {
 }
 @Injectable()
 export class ConfigurableResponseInterceptor implements NestInterceptor {
-  constructor(private readonly dataKey: string = 'data') {}
+  constructor(public readonly dataKey: string = 'data') {}
 
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
     return next.handle().pipe(

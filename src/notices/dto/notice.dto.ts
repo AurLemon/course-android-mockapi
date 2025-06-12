@@ -62,3 +62,8 @@ export class NoticeResponseDto {
   @ApiProperty({ example: '张老师' })
   authorName: string;
 }
+export class UpdateReadStatusDto {
+  @ApiProperty({ example: true, description: '是否已读' })
+  @IsNotEmpty()
+  isRead: boolean;
+}
