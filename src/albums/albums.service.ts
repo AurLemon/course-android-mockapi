@@ -122,7 +122,7 @@ export class AlbumsService {
       where: { uid: userId },
     });
 
-    if (!user || user.role !== 0) {
+    if (!user || user.role === 1) {
       throw new ForbiddenException('只有管理员才能发布相册');
     }
 
@@ -168,7 +168,7 @@ export class AlbumsService {
       where: { uid: userId },
     });
 
-    if (!user || user.role !== 0) {
+    if (!user || user.role === 1) {
       throw new ForbiddenException('只有管理员才能修改相册');
     }
 
@@ -211,7 +211,7 @@ export class AlbumsService {
       where: { uid: userId },
     });
 
-    if (!user || user.role !== 0) {
+    if (!user || user.role === 1) {
       throw new ForbiddenException('只有管理员才能删除相册');
     }
 

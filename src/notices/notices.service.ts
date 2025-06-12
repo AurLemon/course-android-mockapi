@@ -64,7 +64,7 @@ export class NoticesService {
       where: { uid: authorId },
     });
 
-    if (!user || user.role !== 0) {
+    if (!user || user.role === 1) {
       throw new ForbiddenException('只有管理员才能发布通知');
     }
 
@@ -105,7 +105,7 @@ export class NoticesService {
       where: { uid: userId },
     });
 
-    if (!user || user.role !== 0) {
+    if (!user || user.role === 1) {
       throw new ForbiddenException('只有管理员才能修改通知');
     }
 
@@ -144,7 +144,7 @@ export class NoticesService {
       where: { uid: userId },
     });
 
-    if (!user || user.role !== 0) {
+    if (!user || user.role === 1) {
       throw new ForbiddenException('只有管理员才能删除通知');
     }
 
