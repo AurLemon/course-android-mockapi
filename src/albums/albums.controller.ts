@@ -81,7 +81,7 @@ export class AlbumsController {
   @ApiQuery({
     name: 'sortBy',
     required: false,
-    enum: ['id', 'createTime', 'updateTime'],
+    enum: ['id'],
     description: '排序字段，默认 id。',
   })
   @ApiQuery({
