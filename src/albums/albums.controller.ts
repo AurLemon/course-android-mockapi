@@ -18,6 +18,7 @@ import {
   ApiResponse,
   ApiExtraModels,
   getSchemaPath,
+  ApiQuery,
 } from '@nestjs/swagger';
 import { AlbumsService } from './albums.service';
 import {
@@ -38,7 +39,7 @@ export class AlbumsController {
   constructor(private readonly albumsService: AlbumsService) {}
 
   @Get()
-  @ApiOperation({ summary: '获取所有相册' })
+  @ApiOperation({ summary: '获取相册列表（支持分页和排序）' })
   @ApiResponse({
     status: 200,
     description: '操作成功',
@@ -51,22 +52,65 @@ export class AlbumsController {
           type: 'array',
           items: { $ref: getSchemaPath(AlbumResponseDto) },
         },
+        page: {
+          type: 'object',
+          properties: {
+            pageNum: { type: 'integer', example: 1 },
+            pageSize: { type: 'integer', example: 10 },
+            totalItems: { type: 'integer', example: 100 },
+            totalPages: { type: 'integer', example: 10 },
+            sortBy: { type: 'string', example: 'id' },
+            sortOrder: { type: 'string', example: 'desc' },
+          },
+        },
       },
     },
   })
+  @ApiQuery({
+    name: 'pageNum',
+    required: false,
+    schema: { type: 'integer', default: 1 },
+    description: '页码（从 1 开始），默认 1。',
+  })
+  @ApiQuery({
+    name: 'pageSize',
+    required: false,
+    schema: { type: 'integer', default: 10 },
+    description: '每页数量，默认 10。',
+  })
+  @ApiQuery({
+    name: 'sortBy',
+    required: false,
+    enum: ['id', 'createTime', 'updateTime'],
+    description: '排序字段，默认 id。',
+  })
+  @ApiQuery({
+    name: 'sortOrder',
+    required: false,
+    enum: ['asc', 'desc'],
+    description: '排序方式，asc 或 desc，默认 desc。',
+  })
   @ApiExtraModels(AlbumResponseDto)
   @SkipGlobalInterceptor()
-  async findAll() {
-    const [albums, total] = await Promise.all([
-      this.albumsService.findAll(),
-      this.albumsService.getTotalCount(),
-    ]);
+  async findAll(
+    @Query('pageNum', new ParseIntPipe({ optional: true })) pageNum = 1,
+    @Query('pageSize', new ParseIntPipe({ optional: true })) pageSize = 15,
+    @Query('sortBy') sortBy: 'id' = 'id',
+    @Query('sortOrder') sortOrder: 'asc' | 'desc' = 'desc',
+  ) {
+    const result = await this.albumsService.findAll(
+      pageNum,
+      pageSize,
+      sortBy,
+      sortOrder,
+    );
 
     return {
       code: 200,
       msg: '操作成功',
-      total: total,
-      data: albums,
+      total: result.page.totalItems,
+      data: result.data,
+      page: result.page,
     };
   }
 

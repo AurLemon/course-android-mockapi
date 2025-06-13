@@ -5,89 +5,154 @@ import {
 } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { CreateNoticeDto, UpdateNoticeDto } from './dto/notice.dto';
+import { NoticeResponseDto } from './dto/notice.dto';
+
+type PageMeta = {
+  pageNum: number;
+  pageSize: number;
+  totalItems: number;
+  totalPages: number;
+  sortBy: 'id' | 'createdAt' | 'updatedAt';
+  sortOrder: 'asc' | 'desc';
+};
+
+type FindAllNoticesResult = {
+  data: NoticeResponseDto[];
+  page: PageMeta;
+};
 
 @Injectable()
 export class NoticesService {
   constructor(private prisma: PrismaService) {}
 
-  // 获取所有通知
-  async findAll(userId?: number, type?: string) {
-    const notices = await this.prisma.notice.findMany({
-      orderBy: {
-        createdAt: 'desc',
-      },
-      include: {
-        author: {
-          select: {
-            trueName: true,
-          },
-        },
-      },
+  async findAll(
+    userId?: number,
+    type?: 'read' | 'unread',
+    pageNum = 1,
+    pageSize = 15,
+    sortBy: 'id' | 'createdAt' | 'updatedAt' = 'createdAt',
+    sortOrder: 'asc' | 'desc' = 'desc',
+  ): Promise<FindAllNoticesResult> {
+    const orderByClause =
+      sortBy === 'updatedAt'
+        ? { updatedAt: sortOrder }
+        : { [sortBy]: sortOrder };
+
+    const allNotices = await this.prisma.notice.findMany({
+      orderBy: orderByClause,
+      include: { author: { select: { trueName: true } } },
     });
 
-    let userReadNotices: { notice_id: number }[] = [];
+    let readIds: number[] = [];
     if (userId) {
       try {
-        userReadNotices = await this.prisma.$queryRaw`
-        SELECT "notice_id" 
-        FROM "tbl_notice_read" 
-        WHERE "user_id" = ${userId} AND "status" = true
-        ORDER BY "notice_id" ASC
-      `;
-      } catch (error) {
-        console.warn('tbl_notice_read 表可能不存在:', error);
+        const records: { notice_id: number }[] = await this.prisma.$queryRaw`
+          SELECT "notice_id"
+          FROM "tbl_notice_read"
+          WHERE "user_id" = ${userId} AND "status" = true
+        `;
+        readIds = records.map((r) => r.notice_id);
+      } catch (err) {
+        console.warn('tbl_notice_read 表可能不存在或结构变化：', err);
       }
     }
 
-    const readNoticeIds = userReadNotices.map((record) => record.notice_id);
-
-    let filteredNotices = [...notices];
-    if (userId && type) {
-      if (type === 'read') {
-        filteredNotices = notices.filter((notice) =>
-          readNoticeIds.includes(notice.id),
-        );
-      } else if (type === 'unread') {
-        filteredNotices = notices.filter(
-          (notice) => !readNoticeIds.includes(notice.id),
-        );
-      }
+    let filtered: typeof allNotices = allNotices;
+    if (type === 'read') {
+      filtered = allNotices.filter((n) => readIds.includes(n.id));
+    } else if (type === 'unread') {
+      filtered = allNotices.filter((n) => !readIds.includes(n.id));
     }
 
-    return filteredNotices.map((notice) => ({
-      ...notice,
-      authorName: notice.author?.trueName || '管理员',
-      createdAt: notice.createdAt
-        .toLocaleString('sv-SE', {
-          timeZone: 'Asia/Shanghai',
-          hour12: false,
-        })
-        .replace('T', ' '),
-      updatedAt: notice.updatedAt
-        ? notice.updatedAt
-            .toLocaleString('sv-SE', {
-              timeZone: 'Asia/Shanghai',
-              hour12: false,
-            })
-            .replace('T', ' ')
-        : null,
-      ...(userId ? { isRead: readNoticeIds.includes(notice.id) } : {}),
-      author: undefined,
-    }));
+    const totalItems = filtered.length;
+    const ps = pageSize > 0 ? pageSize : 15;
+    const pn = pageNum > 0 ? pageNum : 1;
+    const totalPages = totalItems > 0 ? Math.ceil(totalItems / ps) : 1;
+
+    const offset = (pn - 1) * ps;
+    const pageItems = filtered.slice(offset, offset + ps);
+
+    const data: NoticeResponseDto[] = pageItems.map((notice, idx) => {
+      const base: any = {
+        ...notice,
+        index: offset + idx + 1,
+        authorName: notice.author?.trueName || '管理员',
+        createdAt: notice.createdAt
+          .toLocaleString('sv-SE', {
+            timeZone: 'Asia/Shanghai',
+            hour12: false,
+          })
+          .replace('T', ' '),
+        updatedAt: notice.updatedAt
+          ? notice.updatedAt
+              .toLocaleString('sv-SE', {
+                timeZone: 'Asia/Shanghai',
+                hour12: false,
+              })
+              .replace('T', ' ')
+          : null,
+        author: undefined,
+      };
+      if (userId) {
+        base.isRead = readIds.includes(notice.id);
+      }
+      return base as NoticeResponseDto;
+    });
+
+    const page: PageMeta = {
+      pageNum: pn,
+      pageSize: ps,
+      totalItems,
+      totalPages,
+      sortBy,
+      sortOrder,
+    };
+
+    return { data, page };
   }
 
-  // 获取通知总数
-  async getTotalCount(userId?: number, type?: string) {
+  async getTotalCount(
+    userId?: number,
+    type?: 'read' | 'unread' | 'all',
+  ): Promise<number> {
     if (!userId || !type || type === 'all') {
-      return await this.prisma.notice.count();
+      return this.prisma.notice.count();
     }
 
-    // 如果需要过滤，先获取全部通知
-    const notices = await this.findAll(userId, type);
-    return notices.length;
+    if (type !== 'read' && type !== 'unread') {
+      return this.prisma.notice.count();
+    }
+    try {
+      const readCountResult: Array<{ count: string }> = await this.prisma
+        .$queryRaw`
+      SELECT COUNT(*)::text AS count
+      FROM "tbl_notice_read"
+      WHERE "user_id" = ${userId} AND "status" = true
+    `;
+      const readCount = readCountResult.length
+        ? parseInt(readCountResult[0].count, 10)
+        : 0;
+
+      if (type === 'read') {
+        return readCount;
+      } else {
+        const total = await this.prisma.notice.count();
+        return Math.max(0, total - readCount);
+      }
+    } catch (err) {
+      console.warn('获取已读通知计数时出错，退回 findAll 计算:', err);
+      const result = await this.findAll(
+        userId,
+        type,
+        1,
+        1,
+        'createdAt',
+        'desc',
+      );
+      return result.page.totalItems;
+    }
   }
 
-  // 获取单个通知详情
   async findOne(id: number, userId?: number) {
     const notice = await this.prisma.notice.findUnique({
       where: { id },

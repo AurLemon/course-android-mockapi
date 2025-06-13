@@ -45,7 +45,7 @@ export class NoticesController {
   @ApiOperation({
     summary: '获取通知列表',
     description:
-      '无需 Token 即可访问。如带 Token，返回结果会包含 isRead 字段（布尔值，即用户是否读取了这个通知。布尔值并非带引号的字符串，不需要额外转换）。可通过 type 参数过滤（需有 Token）',
+      '无需 Token 即可访问。如带 Token，返回结果会包含 isRead 字段。支持通过 type 过滤（all/read/unread）、分页和排序。',
   })
   @ApiResponse({
     status: 200,
@@ -59,6 +59,17 @@ export class NoticesController {
           type: 'array',
           items: { $ref: getSchemaPath(NoticeResponseDto) },
         },
+        page: {
+          type: 'object',
+          properties: {
+            pageNum: { type: 'integer', example: 1 },
+            pageSize: { type: 'integer', example: 10 },
+            totalItems: { type: 'integer', example: 100 },
+            totalPages: { type: 'integer', example: 10 },
+            sortBy: { type: 'string', example: 'createdAt' },
+            sortOrder: { type: 'string', example: 'desc' },
+          },
+        },
       },
     },
   })
@@ -66,24 +77,60 @@ export class NoticesController {
     name: 'type',
     required: false,
     enum: ['all', 'read', 'unread'],
-    description: '通知过滤类型，需带 Token 才生效，不传默认为 all。',
+    description: '通知过滤类型，需带 Token 才生效，不传或 all 为不过滤。',
+  })
+  @ApiQuery({
+    name: 'pageNum',
+    required: false,
+    description: '页码（从 1 开始），默认 1。',
+    schema: { type: 'integer', default: 1 },
+  })
+  @ApiQuery({
+    name: 'pageSize',
+    required: false,
+    description: '每页数量，默认 10。',
+    schema: { type: 'integer', default: 10 },
+  })
+  @ApiQuery({
+    name: 'sortBy',
+    required: false,
+    enum: ['id', 'createdAt', 'updatedAt'],
+    description: '排序字段，默认 createdAt。',
+  })
+  @ApiQuery({
+    name: 'sortOrder',
+    required: false,
+    enum: ['asc', 'desc'],
+    description: '排序方式，asc 或 desc，默认 desc。',
   })
   @ApiExtraModels(NoticeResponseDto)
   @SkipGlobalInterceptor()
-  async findAll(@Request() req, @Query('type') type?: string) {
+  async findAll(
+    @Request() req,
+    @Query('type') type?: 'all' | 'read' | 'unread',
+    @Query('pageNum', new ParseIntPipe({ optional: true })) pageNum = 1,
+    @Query('pageSize', new ParseIntPipe({ optional: true })) pageSize = 15,
+    @Query('sortBy') sortBy: 'id' | 'createdAt' | 'updatedAt' = 'createdAt',
+    @Query('sortOrder') sortOrder: 'asc' | 'desc' = 'desc',
+  ) {
     const userId = req.user?.userId;
-    const filterType = userId && type ? type : undefined;
+    const filterType = userId && type && type !== 'all' ? type : undefined;
 
-    const [notices, total] = await Promise.all([
-      this.noticesService.findAll(userId, filterType),
-      this.noticesService.getTotalCount(userId, filterType),
-    ]);
+    const result = await this.noticesService.findAll(
+      userId,
+      filterType,
+      pageNum,
+      pageSize,
+      sortBy,
+      sortOrder,
+    );
 
     return {
       code: 200,
       msg: '操作成功',
-      total: total,
-      data: notices,
+      total: result.page.totalItems,
+      data: result.data,
+      page: result.page,
     };
   }
 

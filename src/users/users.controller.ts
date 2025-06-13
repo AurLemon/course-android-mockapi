@@ -15,6 +15,8 @@ import {
 } from '@nestjs/common';
 import {
   ApiTags,
+  ApiQuery,
+  ApiParam,
   ApiOperation,
   ApiBearerAuth,
   ApiResponse,
@@ -62,22 +64,65 @@ export class UsersController {
           type: 'array',
           items: { $ref: getSchemaPath(UserListResponseDto) },
         },
+        page: {
+          type: 'object',
+          properties: {
+            pageNum: { type: 'integer', example: 1 },
+            pageSize: { type: 'integer', example: 20 },
+            totalItems: { type: 'integer', example: 100 },
+            totalPages: { type: 'integer', example: 5 },
+            sortBy: { type: 'string', example: 'uid' },
+            sortOrder: { type: 'string', example: 'asc' },
+          },
+        },
       },
     },
   })
+  @ApiQuery({
+    name: 'pageNum',
+    required: false,
+    schema: { type: 'integer', default: 1 },
+    description: '页码（从 1 开始），默认 1。',
+  })
+  @ApiQuery({
+    name: 'pageSize',
+    required: false,
+    schema: { type: 'integer', default: 20 },
+    description: '每页数量，默认 20。',
+  })
+  @ApiQuery({
+    name: 'sortBy',
+    required: false,
+    enum: ['uid', 'regtime'],
+    description: '排序字段，默认 uid。',
+  })
+  @ApiQuery({
+    name: 'sortOrder',
+    required: false,
+    enum: ['asc', 'desc'],
+    description: '排序方式，默认 asc。',
+  })
   @ApiExtraModels(UserListResponseDto)
   @SkipGlobalInterceptor()
-  async findAll() {
-    const [users, total] = await Promise.all([
-      this.usersService.findAll(),
-      this.usersService.getTotalCount(),
-    ]);
+  async findAll(
+    @Query('pageNum', new ParseIntPipe({ optional: true })) pageNum = 1,
+    @Query('pageSize', new ParseIntPipe({ optional: true })) pageSize = 20,
+    @Query('sortBy') sortBy = 'uid',
+    @Query('sortOrder') sortOrder: 'asc' | 'desc' = 'asc',
+  ) {
+    const result = await this.usersService.findAll(
+      pageNum,
+      pageSize,
+      sortBy,
+      sortOrder,
+    );
 
     return {
       code: 200,
       msg: '操作成功',
-      total: total,
-      data: users,
+      total: result.page.totalItems,
+      data: result.data,
+      page: result.page,
     };
   }
 
@@ -111,6 +156,22 @@ export class UsersController {
     @Body() updateUserDto: UpdateUserDto,
   ) {
     return this.usersService.update(uid, updateUserDto);
+  }
+
+  @Get('info/:uid')
+  @UseGuards(RolesGuard)
+  @Roles(2)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: '获取指定用户信息（超级管理员）' })
+  @ApiParam({
+    name: 'uid',
+    required: true,
+    description: '要查询的用户 ID',
+    schema: { type: 'integer', example: 123 },
+  })
+  @ApiSuccessResponse(UserInfoResponseDto, { description: '返回指定用户信息' })
+  async getUserInfoByAdmin(@Param('uid', ParseIntPipe) uid: number) {
+    return this.usersService.findById(uid);
   }
 
   @Put('modify')

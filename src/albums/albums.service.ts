@@ -5,13 +5,26 @@ import {
 } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { CreateAlbumDto, UpdateAlbumDto } from './dto/album.dto';
-import { log } from 'node:console';
+import { AlbumResponseDto } from './dto/album.dto';
+
+type PageMeta = {
+  pageNum: number;
+  pageSize: number;
+  totalItems: number;
+  totalPages: number;
+  sortBy: 'id' | 'createTime' | 'updateTime';
+  sortOrder: 'asc' | 'desc';
+};
+
+type FindAllAlbumsResult = {
+  data: AlbumResponseDto[];
+  page: PageMeta;
+};
 
 @Injectable()
 export class AlbumsService {
   constructor(private prisma: PrismaService) {}
 
-  // 辅助方法：安全转换相册对象，处理BigInt
   private safeAlbumConversion(album) {
     if (!album) return null;
 
@@ -29,37 +42,42 @@ export class AlbumsService {
   }
 
   // 获取所有相册
-  async findAll() {
-    try {
-      const typeCount = await this.prisma.albumType.count();
+  async findAll(
+    pageNum = 1,
+    pageSize = 10,
+    sortBy: 'id' | 'createTime' | 'updateTime' = 'id',
+    sortOrder: 'asc' | 'desc' = 'desc',
+  ): Promise<FindAllAlbumsResult> {
+    const totalItems = await this.prisma.album.count();
 
-      if (typeCount === 0) {
-        console.log('未找到相册类型数据，正在创建默认类型...');
-        await this.prisma.albumType.createMany({
-          data: [
-            { id: 1, name: '自然风景' },
-            { id: 2, name: '国外景点' },
-            { id: 3, name: '历史文化' },
-            { id: 4, name: '四季风光' },
-          ],
-          skipDuplicates: true,
-        });
-      }
+    const ps = pageSize > 0 ? pageSize : 10;
+    const pn = pageNum > 0 ? pageNum : 1;
+    const totalPages = totalItems > 0 ? Math.ceil(totalItems / ps) : 1;
 
-      const albums = await this.prisma.album.findMany({
-        include: {
-          albumType: {
-            select: {
-              name: true,
-            },
+    const validSortFields = ['id'];
+    const orderByField = validSortFields.includes(sortBy) ? sortBy : 'id';
+    const orderDirection = sortOrder === 'desc' ? 'desc' : 'asc';
+    const orderByClause: Record<string, 'asc' | 'desc'> = {
+      [orderByField]: orderDirection,
+    };
+
+    const skip = (pn - 1) * ps;
+
+    const rows = await this.prisma.album.findMany({
+      include: {
+        albumType: {
+          select: {
+            name: true,
           },
         },
-        orderBy: {
-          id: 'desc', // 修改排序为按照相册ID从大到小
-        },
-      });
+      },
+      orderBy: orderByClause,
+      skip,
+      take: ps,
+    });
 
-      const formattedAlbums = albums.map((album) => ({
+    const data: AlbumResponseDto[] = rows.map((album, idx) => {
+      const formatted: any = {
         ...album,
         createTime: album.createTime
           ? album.createTime
@@ -77,13 +95,26 @@ export class AlbumsService {
               })
               .replace('T', ' ')
           : null,
-      }));
+      };
 
-      return this.safeAlbumsConversion(formattedAlbums);
-    } catch (error) {
-      console.error('查询相册列表失败:', error);
-      throw new Error('获取相册列表时发生错误');
-    }
+      const safe = this.safeAlbumConversion(formatted);
+
+      return {
+        index: skip + idx + 1,
+        ...safe,
+      } as AlbumResponseDto;
+    });
+
+    const page: PageMeta = {
+      pageNum: pn,
+      pageSize: ps,
+      totalItems,
+      totalPages,
+      sortBy: orderByField as 'id',
+      sortOrder: orderDirection,
+    };
+
+    return { data, page };
   }
 
   // 获取相册总数

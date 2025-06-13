@@ -10,9 +10,9 @@ import {
   UpdateUserSelfDto,
 } from './dto/user.dto';
 import { User } from '@prisma/client';
-
-// 定义用户列表返回类型
+// 定义用户列表项类型
 type UserListItem = {
+  index: number;
   uid: number;
   username: string;
   trueName: string | null;
@@ -23,6 +23,22 @@ type UserListItem = {
   role: number;
   regtime: string;
   balance: number;
+};
+
+// 分页+排序元数据类型
+type PageMeta = {
+  pageNum: number;
+  pageSize: number;
+  totalItems: number;
+  totalPages: number;
+  sortBy: string;
+  sortOrder: 'asc' | 'desc';
+};
+
+// 最终返回类型
+type UserListResult = {
+  data: UserListItem[];
+  page: PageMeta;
 };
 
 // 定义用户信息返回类型
@@ -43,8 +59,28 @@ export class UsersService {
   constructor(private prisma: PrismaService) {}
 
   // 获取所有用户列表
-  async findAll(): Promise<UserListItem[]> {
-    const users = await this.prisma.user.findMany({
+  async findAll(
+    pageNum = 1,
+    pageSize = 15,
+    sortBy = 'uid',
+    sortOrder: 'asc' | 'desc' = 'asc',
+  ): Promise<UserListResult> {
+    // 1. 计算总记录数
+    const totalItems = await this.prisma.user.count();
+
+    // 2. 计算总页数
+    const totalPages = Math.ceil(totalItems / pageSize) || 1;
+
+    // 3. 校验并拼装排序字段
+    const validSortFields = ['uid', 'regtime'];
+    const orderByField = validSortFields.includes(sortBy) ? sortBy : 'uid';
+    const orderDirection = sortOrder === 'desc' ? 'desc' : 'asc';
+
+    // 4. 计算跳过数量
+    const skip = (pageNum - 1) * pageSize;
+
+    // 5. 拉取当前页数据
+    const rows = await this.prisma.user.findMany({
       select: {
         uid: true,
         username: true,
@@ -57,11 +93,23 @@ export class UsersService {
         regtime: true,
         balance: true,
       },
-      orderBy: { uid: 'asc' },
+      orderBy: { [orderByField]: orderDirection },
+      skip,
+      take: pageSize,
     });
 
-    return users.map((user) => ({
-      ...user,
+    // 6. 格式化并注入全局 index
+    const data: UserListItem[] = rows.map((user, idx) => ({
+      index: skip + idx + 1,
+      uid: user.uid,
+      username: user.username,
+      trueName: user.trueName,
+      sex: user.sex,
+      telephone: user.telephone,
+      birth: user.birth,
+      dept: user.dept,
+      role: user.role,
+      balance: user.balance,
       regtime: user.regtime
         .toLocaleString('sv-SE', {
           timeZone: 'Asia/Shanghai',
@@ -69,6 +117,18 @@ export class UsersService {
         })
         .replace('T', ' '),
     }));
+
+    return {
+      data,
+      page: {
+        pageNum,
+        pageSize,
+        totalItems,
+        totalPages,
+        sortBy: orderByField,
+        sortOrder: orderDirection,
+      },
+    };
   }
 
   // 新增统计方法
